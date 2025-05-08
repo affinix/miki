@@ -19,6 +19,18 @@ class MikiEmbeds {
             .setFooter({ text: "(╥﹏╥)" })
             .setTimestamp();
     }
+
+    replyEmbed(title: string, message?: string): EmbedBuilder {
+        return new EmbedBuilder()
+            .setAuthor({
+                name: title,
+                iconURL: this.client.user?.avatarURL(),
+            })
+            .setDescription(message ? message : null)
+            .setColor(config.primaryColor)
+            .setFooter({ text: "( ◡‿◡ *)" })
+            .setTimestamp();
+    }
 }
 
 export default MikiEmbeds;

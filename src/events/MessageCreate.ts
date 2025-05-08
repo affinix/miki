@@ -18,20 +18,24 @@ const ReadyEvent: IEvent<Events.MessageCreate> = {
         if (!cmd) return;
 
         for (const [i, arg] of cmd.args.entries()) {
-            if (!args[i] && !arg.required) continue;
-            if (!args[i] && arg.required) {
-                const embed = client.embeds.errorEmbed(
-                    `Required argument \`${arg.name}\` not provided.`,
-                ).addFields({ name: "Usage:", value: commandUsage(cmd) });
+            let errorMessage: string | null = null;
 
-                return message.reply({ embeds: [embed] });
+            if (!args[i] && !arg.required) continue;
+
+            const validateError = arg.validate(args[i], client);
+            if (validateError) {
+                errorMessage =
+                    `Argument \`${arg.name}\` is invalid: ${validateError}.`;
             }
 
-            const validateError = arg.validate(args[i]);
-            if (validateError) {
-                const embed = client.embeds.errorEmbed(
-                    `Argument \`${arg.name}\` is invalid: ${validateError}.`,
-                ).addFields({ name: "Usage:", value: commandUsage(cmd) });
+            if (!args[i] && arg.required) {
+                errorMessage =
+                    `Required argument \`${arg.name}\` not provided.`;
+            }
+
+            if (errorMessage) {
+                const embed = client.embeds.errorEmbed(errorMessage)
+                    .addFields({ name: "Usage:", value: commandUsage(cmd) });
 
                 return message.reply({ embeds: [embed] });
             }

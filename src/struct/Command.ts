@@ -15,7 +15,7 @@ interface ICommandArg {
     name: string;
     description: string;
     required: boolean;
-    validate: (arg: string) => string | null;
+    validate: (arg: string, client: Miki) => string | null;
 }
 
 export { type ICommand, type ICommandArg };

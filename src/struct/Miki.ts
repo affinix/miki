@@ -7,7 +7,7 @@ import config from "../config.js";
 import logger from "../util/logger.ts";
 import { EventKey, IEvent } from "./Event.ts";
 import { ICommand } from "./Command.ts";
-import MikiEmbeds from "../util/embed.ts";
+import MikiEmbeds from "../util/MikiEmbeds.ts";
 
 class Miki extends Client {
     public config = config;
