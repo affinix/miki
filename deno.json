@@ -1,13 +1,20 @@
 {
     "tasks": {
-        "dev": "deno run --env-file -A --watch src/main.ts"
+        "init": "sed -i -e 's/\"deno\"/\"no-deno\"/' node_modules/@libsql/client/package.json && deno task push",
+        "dev": "deno run --env-file -A --watch src/main.ts",
+        "db:generate": "deno run -A --node-modules-dir npm:drizzle-kit generate",
+        "db:migrate": "deno run -A --node-modules-dir npm:drizzle-kit migrate",
+        "db:push": "deno run -A --node-modules-dir npm:drizzle-kit push"
     },
     "imports": {
         "@discordjs/builders": "npm:@discordjs/builders@^1.11.2",
+        "@libsql/client": "npm:@libsql/client@^0.15.4",
         "discord-api-types": "npm:discord-api-types@^0.38.3",
         "discord.js": "npm:discord.js@^14.19.3",
         "chalk": "npm:chalk@^5.4.1",
         "dayjs": "npm:dayjs@^1.11.13",
+        "drizzle-kit": "npm:drizzle-kit@^0.31.1",
+        "drizzle-orm": "npm:drizzle-orm@^0.43.1",
         "fast-glob": "npm:fast-glob@^3.3.3"
     },
     "fmt": {

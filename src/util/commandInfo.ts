@@ -1,5 +1,5 @@
 import { ICommand } from "../struct/Command.ts";
-import config from "../config.js";
+import config from "../config.ts";
 
 export const commandUsage = (command: ICommand): string => {
     const argsList = command.args.reduce<string>(

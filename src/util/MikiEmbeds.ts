@@ -1,6 +1,6 @@
 import { EmbedBuilder } from "@discordjs/builders";
 import { happyKaomoji, sadKaomoji, shockKaomoji } from "./kaomoji.ts";
-import config from "../config.js";
+import config from "../config.ts";
 import Miki from "../struct/Miki.ts";
 
 class MikiEmbeds {

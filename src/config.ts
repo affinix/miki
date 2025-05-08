@@ -1,5 +1,7 @@
 const config = {
     prefix: "!",
+
+    // Embed Colors
     primaryColor: 0xfa_b4_74,
     errorColor: 0xd8_23_23,
 

@@ -11,4 +11,8 @@ git clone https://github.com/affinix/miki.git
 cd miki
 deno install
 ```
-Then, copy `.env.example` to `.env` and fill in required values. Run `deno task dev` to start development server.
+Copy `.env.example` to `.env` and fill in required values. Then:
+```bash
+deno task init
+deno task dev
+```

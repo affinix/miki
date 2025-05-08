@@ -2,18 +2,21 @@ import { Client } from "discord.js";
 import { GatewayIntentBits } from "discord-api-types/v10";
 import fg from "fast-glob";
 import process from "node:process";
+import { drizzle } from "drizzle-orm/libsql/node";
 
-import config from "../config.js";
+import config from "../config.ts";
 import logger from "../util/logger.ts";
 import { EventKey, IEvent } from "./Event.ts";
 import { ICommand } from "./Command.ts";
 import MikiEmbeds from "../util/MikiEmbeds.ts";
+import { usersTable } from "../db/user.ts";
 
 class Miki extends Client {
     public config = config;
     public logger = logger;
     public embeds = new MikiEmbeds(this);
     public commands = new Map<string, ICommand>();
+    public db = drizzle(`${Deno.env.get("DB_FILE")}`);
 
     constructor() {
         super({
@@ -26,10 +29,12 @@ class Miki extends Client {
         });
     }
 
-    start(): void {
+    async start(): Promise<void> {
         this.loadEvents();
         this.loadCommands();
 
+        const users = await this.db.select().from(usersTable);
+        this.logger.log(`Loaded ${users.length} users in database.`);
         this.login(Deno.env.get("TOKEN"));
     }
 
