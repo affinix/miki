@@ -1,4 +1,5 @@
 import { EmbedBuilder } from "@discordjs/builders";
+import { happyKaomoji, sadKaomoji, shockKaomoji } from "./kaomoji.ts";
 import config from "../config.js";
 import Miki from "../struct/Miki.ts";
 
@@ -11,12 +12,12 @@ class MikiEmbeds {
     errorEmbed(message: string): EmbedBuilder {
         return new EmbedBuilder()
             .setAuthor({
-                name: "there was an error! Σ(°△°|||)",
+                name: `there was an error! ${shockKaomoji()}`,
                 iconURL: this.client.user?.avatarURL(),
             })
             .setDescription(message)
             .setColor(config.errorColor)
-            .setFooter({ text: "(╥﹏╥)" })
+            .setFooter({ text: sadKaomoji() })
             .setTimestamp();
     }
 
@@ -28,7 +29,7 @@ class MikiEmbeds {
             })
             .setDescription(message ? message : null)
             .setColor(config.primaryColor)
-            .setFooter({ text: "( ◡‿◡ *)" })
+            .setFooter({ text: happyKaomoji() })
             .setTimestamp();
     }
 }

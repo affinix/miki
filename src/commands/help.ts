@@ -1,6 +1,7 @@
 import { ICommand } from "../struct/Command.ts";
 import CommandCategory from "../struct/CommandCategory.ts";
 import { commandUsage, listCommands } from "../util/commandInfo.ts";
+import { saluteKaomoji } from "../util/kaomoji.ts";
 
 const PingCommand: ICommand = {
     commandName: "help",
@@ -43,7 +44,7 @@ const PingCommand: ICommand = {
         }
 
         const embed = client.embeds.replyEmbed(
-            "miki's at your service! (`･ω･´)ゞ",
+            `miki's at your service! ${saluteKaomoji()}`,
             listCommands([...client.commands.values()]),
         );
 
