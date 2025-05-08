@@ -5,8 +5,8 @@ import Miki from "./Miki.ts";
 type EventKey = `${Events}` & keyof ClientEvents;
 
 interface IEvent<E extends EventKey> {
-    eventName: keyof ClientEvents;
+    eventName: EventKey;
     exec: (client: Miki, ...args: ClientEvents[E]) => void;
 }
 
-export default IEvent;
+export { type EventKey, type IEvent };

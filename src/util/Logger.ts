@@ -10,6 +10,10 @@ class Logger {
     log(content: string): void {
         console.log(`${this.time()} ${chalk.bold.bgBlue("LOG")} ${content}`);
     }
+
+    error(content: string): void {
+        console.log(`${this.time()} ${chalk.bold.bgRed("ERR")} ${content}`);
+    }
 }
 
 export default Logger;

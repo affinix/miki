@@ -5,13 +5,13 @@ import process from "node:process";
 
 import config from "../config.js";
 import Logger from "../util/Logger.ts";
-import IEvent from "./Event.ts";
+import { EventKey, IEvent } from "./Event.ts";
 import { ICommand } from "./Command.ts";
 
 class Miki extends Client {
     public config = config;
     public logger = new Logger();
-    private commands = new Map<string, ICommand>();
+    public commands = new Map<string, ICommand>();
 
     constructor() {
         super({
@@ -35,7 +35,7 @@ class Miki extends Client {
         this.logger.log(`Loading ${files.length} events.`);
 
         files.forEach(async (file) => {
-            const event: IEvent =
+            const event: IEvent<EventKey> =
                 (await import(`file://${process.cwd()}/${file}`)).default;
 
             this.on(event.eventName, (...args) => event.exec(this, ...args));
