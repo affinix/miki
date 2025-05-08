@@ -5,9 +5,19 @@
     "imports": {
         "discord-api-types": "npm:discord-api-types@^0.38.3",
         "discord.js": "npm:discord.js@^14.19.3",
-        "signale": "npm:signale@^1.4.0"
+        "chalk": "npm:chalk@^5.4.1",
+        "dayjs": "npm:dayjs@^1.11.13",
+        "fast-glob": "npm:fast-glob@^3.3.3",
+        "glob": "npm:glob@^11.0.2"
     },
     "fmt": {
         "indentWidth": 4
+    },
+    "lint": {
+        "rules": {
+            "exclude": [
+                "no-explicit-any"
+            ]
+        }
     }
 }
