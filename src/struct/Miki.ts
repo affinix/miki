@@ -4,13 +4,15 @@ import fg from "fast-glob";
 import process from "node:process";
 
 import config from "../config.js";
-import Logger from "../util/Logger.ts";
+import logger from "../util/logger.ts";
 import { EventKey, IEvent } from "./Event.ts";
 import { ICommand } from "./Command.ts";
+import MikiEmbeds from "../util/embed.ts";
 
 class Miki extends Client {
     public config = config;
-    public logger = new Logger();
+    public logger = logger;
+    public embeds = new MikiEmbeds(this);
     public commands = new Map<string, ICommand>();
 
     constructor() {
@@ -20,6 +22,7 @@ class Miki extends Client {
                 GatewayIntentBits.GuildMessages,
                 GatewayIntentBits.MessageContent,
             ],
+            allowedMentions: { repliedUser: false },
         });
     }
 

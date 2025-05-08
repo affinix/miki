@@ -1,9 +1,10 @@
 import { Message } from "discord.js";
 import Miki from "./Miki.ts";
+import CommandCategory from "./CommandCategory.ts";
 
 interface ICommand {
     commandName: string;
-    category: string;
+    category: CommandCategory;
     desc: string;
     longDesc: string;
     args: ICommandArg[];

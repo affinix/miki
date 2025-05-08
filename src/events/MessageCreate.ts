@@ -1,5 +1,6 @@
 import { Events } from "discord.js";
 import { IEvent } from "../struct/Event.ts";
+import { commandUsage } from "../util/commandHelp.ts";
 
 const ReadyEvent: IEvent<Events.MessageCreate> = {
     eventName: Events.MessageCreate,
@@ -16,18 +17,25 @@ const ReadyEvent: IEvent<Events.MessageCreate> = {
         const cmd = client.commands.get(command);
         if (!cmd) return;
 
-        cmd.args.forEach((arg, i) => {
-            if (!args[i] && !arg.required) return;
+        for (const [i, arg] of cmd.args.entries()) {
+            if (!args[i] && !arg.required) continue;
             if (!args[i] && arg.required) {
-                return client.logger.log(
-                    `Required argument ${arg.name} not provided.`,
-                );
+                const embed = client.embeds.errorEmbed(
+                    `Required argument \`${arg.name}\` not provided.`,
+                ).addFields({ name: "Usage:", value: commandUsage(cmd) });
+
+                return message.reply({ embeds: [embed] });
             }
 
-            if (arg.validate(args[i])) {
-                return client.logger.log(`Argument ${arg.name} is invalid.`);
+            const validateError = arg.validate(args[i]);
+            if (validateError) {
+                const embed = client.embeds.errorEmbed(
+                    `Argument \`${arg.name}\` is invalid: ${validateError}.`,
+                ).addFields({ name: "Usage:", value: commandUsage(cmd) });
+
+                return message.reply({ embeds: [embed] });
             }
-        });
+        }
 
         try {
             cmd.exec(client, message, ...args);
