@@ -1,0 +1,13 @@
+{
+    "tasks": {
+        "dev": "deno run --env-file -A --watch src/main.ts"
+    },
+    "imports": {
+        "discord-api-types": "npm:discord-api-types@^0.38.3",
+        "discord.js": "npm:discord.js@^14.19.3",
+        "signale": "npm:signale@^1.4.0"
+    },
+    "fmt": {
+        "indentWidth": 4
+    }
+}
