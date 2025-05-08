@@ -1,6 +1,7 @@
 {
   "version": "4",
   "specifiers": {
+    "npm:@discordjs/builders@^1.11.2": "1.11.2",
     "npm:chalk@^5.4.1": "5.4.1",
     "npm:dayjs@^1.11.13": "1.11.13",
     "npm:discord-api-types@~0.38.3": "0.38.3",
@@ -422,6 +423,7 @@
   },
   "workspace": {
     "dependencies": [
+      "npm:@discordjs/builders@^1.11.2",
       "npm:chalk@^5.4.1",
       "npm:dayjs@^1.11.13",
       "npm:discord-api-types@~0.38.3",

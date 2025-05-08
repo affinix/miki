@@ -25,13 +25,13 @@ class Miki extends Client {
 
     start(): void {
         this.loadEvents();
+        this.loadCommands();
 
         this.login(Deno.env.get("TOKEN"));
     }
 
     loadEvents(): void {
         const files: string[] = fg.sync("src/events/*.ts");
-
         this.logger.log(`Loading ${files.length} events.`);
 
         files.forEach(async (file) => {
@@ -39,6 +39,18 @@ class Miki extends Client {
                 (await import(`file://${process.cwd()}/${file}`)).default;
 
             this.on(event.eventName, (...args) => event.exec(this, ...args));
+        });
+    }
+
+    loadCommands(): void {
+        const files: string[] = fg.sync("src/commands/**/*.ts");
+        this.logger.log(`Loading ${files.length} commands.`);
+
+        files.forEach(async (file) => {
+            const command: ICommand =
+                (await import(`file://${process.cwd()}/${file}`)).default;
+
+            this.commands.set(command.commandName, command);
         });
     }
 }
