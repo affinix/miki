@@ -1,4 +1,4 @@
-import { Client, Collection } from "discord.js";
+import { Client } from "discord.js";
 import { GatewayIntentBits } from "discord-api-types/v10";
 import fg from "fast-glob";
 import process from "node:process";
@@ -6,11 +6,12 @@ import process from "node:process";
 import config from "../config.js";
 import Logger from "../util/Logger.ts";
 import IEvent from "./Event.ts";
+import { ICommand } from "./Command.ts";
 
 class Miki extends Client {
     public config = config;
     public logger = new Logger();
-    private commands = new Collection();
+    private commands = new Map<string, ICommand>();
 
     constructor() {
         super({

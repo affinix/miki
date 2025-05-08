@@ -1,7 +1,8 @@
 import chalk from "chalk";
 import IEvent from "../struct/Event.ts";
+import { Events } from "discord.js";
 
-const ReadyEvent: IEvent = {
+const ReadyEvent: IEvent<Events.ClientReady> = {
     eventName: "ready",
     exec: (client) => {
         const botName = chalk.bold.underline(
