@@ -9,7 +9,7 @@ const ReadyEvent: IEvent<Events.ClientReady> = {
             `${client.user?.username}#${client.user?.discriminator}`,
         );
 
-        client.logger.log(`Bot is currently logged in as ${botName}.`);
+        client.logger.log(`Bot is ready and logged in as ${botName}.`);
     },
 };
 

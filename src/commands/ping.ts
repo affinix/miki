@@ -3,7 +3,7 @@ import CommandCategory from "../struct/CommandCategory.ts";
 
 const PingCommand: ICommand = {
     commandName: "ping",
-    category: CommandCategory.SYS,
+    category: CommandCategory.MISC,
     desc: "Check message ping.",
     longDesc: "Pong! Checks how long it takes for me to send a message.",
     args: [],

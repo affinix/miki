@@ -8,8 +8,7 @@
         "discord.js": "npm:discord.js@^14.19.3",
         "chalk": "npm:chalk@^5.4.1",
         "dayjs": "npm:dayjs@^1.11.13",
-        "fast-glob": "npm:fast-glob@^3.3.3",
-        "glob": "npm:glob@^11.0.2"
+        "fast-glob": "npm:fast-glob@^3.3.3"
     },
     "fmt": {
         "indentWidth": 4

@@ -1,11 +1,10 @@
 import { ICommand } from "../struct/Command.ts";
 import CommandCategory from "../struct/CommandCategory.ts";
-import { commandUsage } from "../util/commandHelp.ts";
-import { listCommands } from "../util/commandHelp.ts";
+import { commandUsage, listCommands } from "../util/commandInfo.ts";
 
 const PingCommand: ICommand = {
     commandName: "help",
-    category: CommandCategory.MISC,
+    category: CommandCategory.SYS,
     desc: "Displays all commands.",
     longDesc:
         "Lists all the commands I have. I'll show you all the things that I can do! ᕙ[⎚◡⎚]ᕗ",

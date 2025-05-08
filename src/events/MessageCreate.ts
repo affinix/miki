@@ -1,6 +1,6 @@
 import { Events } from "discord.js";
 import { IEvent } from "../struct/Event.ts";
-import { commandUsage } from "../util/commandHelp.ts";
+import { commandUsage } from "../util/commandInfo.ts";
 
 const ReadyEvent: IEvent<Events.MessageCreate> = {
     eventName: Events.MessageCreate,
