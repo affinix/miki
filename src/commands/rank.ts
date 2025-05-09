@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { findUser } from "../db/querys.ts";
 import { ICommand } from "../struct/Command.ts";
 import CommandCategory from "../struct/CommandCategory.ts";
@@ -34,10 +35,16 @@ const RankCommand: ICommand = {
             return message.reply({ embeds: [embed] });
         }
 
+        const cooldown = client.expCooldown.get(user.id);
+        if (!cooldown) {
+            return client.logger.error(
+                `Could not find cooldown for ${user.id} for !rank`,
+            );
+        }
+
+        const cdFormatted = dayjs(cooldown - Date.now()).format("mm[m] ss[s]");
         message.reply(
-            `Exp: ${userData.exp}\nCooldown: ${
-                (client.expCooldown.get(user.id) - Date.now()) / 1000
-            }`,
+            `Exp: ${userData.exp}\nCooldown: ${cdFormatted}`,
         );
     },
 };
