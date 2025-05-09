@@ -12,19 +12,31 @@ const RankCommand: ICommand = {
         name: "user",
         description: "Mention of the user you want to check!",
         required: false,
-        validate: () => null,
+        validate: (arg) => {
+            if (!arg.match(/<@!*&*[0-9]+>/g)) {
+                return `${arg} is not a valid mention!`;
+            }
+
+            return null;
+        },
     }],
     exec: async (client, message, userMention) => {
-        const user = await findUser(client, message.author.id);
-        if (!user) {
-            return client.logger.error(
-                `Could not find user ${message.author.id} in database!`,
+        let user = message.author;
+        if (userMention && message.mentions.members) {
+            user = message.mentions.members?.first();
+        }
+
+        const userData = await findUser(client, user.id);
+        if (!userData) {
+            const embed = client.embeds.errorEmbed(
+                `Could not find ${userMention}'s exp!`,
             );
+            return message.reply({ embeds: [embed] });
         }
 
         message.reply(
-            `Exp: ${user.exp}\nCooldown: ${
-                client.expCooldown.get(message.author.id) - Date.now()
+            `Exp: ${userData.exp}\nCooldown: ${
+                (client.expCooldown.get(user.id) - Date.now()) / 1000
             }`,
         );
     },

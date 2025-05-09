@@ -13,7 +13,7 @@ class MikiEmbeds {
         return new EmbedBuilder()
             .setAuthor({
                 name: `there was an error! ${shockKaomoji()}`,
-                iconURL: this.client.user?.avatarURL(),
+                iconURL: `${this.client.user?.avatarURL()}`,
             })
             .setDescription(message)
             .setColor(config.errorColor)
@@ -25,7 +25,7 @@ class MikiEmbeds {
         return new EmbedBuilder()
             .setAuthor({
                 name: title,
-                iconURL: this.client.user?.avatarURL(),
+                iconURL: `${this.client.user?.avatarURL()}`,
             })
             .setDescription(message ? message : null)
             .setColor(config.primaryColor)
