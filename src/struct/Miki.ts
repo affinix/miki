@@ -10,13 +10,17 @@ import { EventKey, IEvent } from "./Event.ts";
 import { ICommand } from "./Command.ts";
 import MikiEmbeds from "../util/MikiEmbeds.ts";
 import { usersTable } from "../db/user.ts";
+import * as schema from "../db/schema.ts";
 
 class Miki extends Client {
     public config = config;
     public logger = logger;
     public embeds = new MikiEmbeds(this);
+
     public commands = new Map<string, ICommand>();
-    public db = drizzle(`${Deno.env.get("DB_FILE")}`);
+    public expCooldown = new Map<string, number>();
+
+    public db = drizzle({ connection: `${Deno.env.get("DB_FILE")}`, schema });
 
     constructor() {
         super({

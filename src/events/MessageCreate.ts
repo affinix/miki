@@ -1,11 +1,17 @@
 import { Events } from "discord.js";
 import { IEvent } from "../struct/Event.ts";
 import { commandUsage } from "../util/commandInfo.ts";
+import Miki from "../struct/Miki.ts";
+import { usersTable } from "../db/user.ts";
+import { eq } from "drizzle-orm/sql/expressions";
+import { createUser, findUser, updateExp } from "../db/querys.ts";
 
 const ReadyEvent: IEvent<Events.MessageCreate> = {
     eventName: Events.MessageCreate,
-    exec: (client, message) => {
+    exec: async (client, message) => {
         if (message.author.bot || !message.guild) return;
+
+        await giveExp(client, message.author.id);
 
         const prefix = client.config.prefix;
         const msg = message.content;
@@ -51,6 +57,21 @@ const ReadyEvent: IEvent<Events.MessageCreate> = {
             }
         }
     },
+};
+
+const giveExp = async (client: Miki, userId: string): Promise<void> => {
+    const cooldown = client.expCooldown.get(userId);
+    if (!cooldown) {
+        client.expCooldown.set(userId, Date.now() + client.config.expCooldown);
+    } else {
+        if (cooldown > Date.now()) return;
+    }
+
+    let user = await findUser(client, userId);
+    if (!user) user = await createUser(client, userId);
+
+    await updateExp(client, userId, user.exp + client.config.expGain);
+    client.expCooldown.set(userId, Date.now() + client.config.expCooldown);
 };
 
 export default ReadyEvent;

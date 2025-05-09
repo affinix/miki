@@ -1,6 +1,6 @@
 {
     "tasks": {
-        "init": "sed -i -e 's/\"deno\"/\"no-deno\"/' node_modules/@libsql/client/package.json && deno task push",
+        "init": "sed -i -e 's/\"deno\"/\"no-deno\"/' node_modules/@libsql/client/package.json && deno task db:push",
         "dev": "deno run --env-file -A --watch src/main.ts",
         "db:generate": "deno run -A --node-modules-dir npm:drizzle-kit generate",
         "db:migrate": "deno run -A --node-modules-dir npm:drizzle-kit migrate",
