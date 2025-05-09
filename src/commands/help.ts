@@ -21,6 +21,7 @@ const PingCommand: ICommand = {
             return null;
         },
     }],
+
     exec: (client, message, command) => {
         if (command) {
             const cmd = client.commands.get(command);

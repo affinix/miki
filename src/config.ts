@@ -8,6 +8,7 @@ const config = {
     // Cooldown for Exp in miliseconds
     expCooldown: 1000 * 60 * 6,
     expGain: 1,
+    expGrowth: 40, // Growth of exp needed per level up.
 };
 
 export default config;

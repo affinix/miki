@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import { findUser } from "../db/querys.ts";
 import { ICommand } from "../struct/Command.ts";
 import CommandCategory from "../struct/CommandCategory.ts";
+import { expForNextLevel, getLevel } from "../util/level.ts";
 
 const RankCommand: ICommand = {
     commandName: "rank",
@@ -21,6 +22,7 @@ const RankCommand: ICommand = {
             return null;
         },
     }],
+
     exec: async (client, message, userMention) => {
         let user = message.author;
         if (userMention && message.mentions.members) {
@@ -42,9 +44,11 @@ const RankCommand: ICommand = {
             );
         }
 
+        const level = getLevel(userData.exp);
+        const expNextLevel = expForNextLevel(userData.exp);
         const cdFormatted = dayjs(cooldown - Date.now()).format("mm[m] ss[s]");
         message.reply(
-            `Exp: ${userData.exp}\nCooldown: ${cdFormatted}`,
+            `Exp: ${userData.exp}/${expNextLevel}\nLevel: ${level}\nCooldown: ${cdFormatted}`,
         );
     },
 };
