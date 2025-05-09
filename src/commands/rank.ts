@@ -3,6 +3,7 @@ import { findUser } from "../db/querys.ts";
 import { ICommand } from "../struct/Command.ts";
 import CommandCategory from "../struct/CommandCategory.ts";
 import { expForNextLevel, getLevel } from "../util/level.ts";
+import { sendPaginationEmbed } from "../util/paginationEmbed.ts";
 
 const RankCommand: ICommand = {
     commandName: "rank",
@@ -49,6 +50,15 @@ const RankCommand: ICommand = {
         const cdFormatted = dayjs(cooldown - Date.now()).format("mm[m] ss[s]");
         message.reply(
             `Exp: ${userData.exp}/${expNextLevel}\nLevel: ${level}\nCooldown: ${cdFormatted}`,
+        );
+
+        await sendPaginationEmbed(
+            message,
+            [
+                client.embeds.replyEmbed("test1", "test1"),
+                client.embeds.replyEmbed("test2", "test2"),
+                client.embeds.replyEmbed("test3", "test3"),
+            ],
         );
     },
 };
