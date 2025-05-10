@@ -9,6 +9,7 @@
     "imports": {
         "@discordjs/builders": "npm:@discordjs/builders@^1.11.2",
         "@libsql/client": "npm:@libsql/client@^0.15.4",
+        "canvacord": "npm:canvacord@^6.0.2",
         "discord-api-types": "npm:discord-api-types@^0.38.3",
         "discord.js": "npm:discord.js@^14.19.3",
         "chalk": "npm:chalk@^5.4.1",

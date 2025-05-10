@@ -8,7 +8,7 @@ import config from "../config.ts";
 import logger from "../util/logger.ts";
 import { EventKey, IEvent } from "./Event.ts";
 import { ICommand } from "./Command.ts";
-import MikiEmbeds from "../util/MikiEmbeds.ts";
+import MikiEmbeds from "../generators/EmbedGenerator.ts";
 import { usersTable } from "../db/user.ts";
 import * as schema from "../db/schema.ts";
 

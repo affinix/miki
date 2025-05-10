@@ -3,7 +3,14 @@ import { findUser } from "../db/querys.ts";
 import { ICommand } from "../struct/Command.ts";
 import CommandCategory from "../struct/CommandCategory.ts";
 import { expForNextLevel, getLevel } from "../util/level.ts";
-import { sendPaginationEmbed } from "../util/paginationEmbed.ts";
+import RankCardBuilder from "../generators/RankCardBuilder.ts";
+import { MessageFlags } from "discord-api-types/v10";
+import { AttachmentBuilder } from "discord.js";
+import {
+    FileBuilder,
+    MediaGalleryBuilder,
+    TextDisplayBuilder,
+} from "@discordjs/builders";
 
 const RankCommand: ICommand = {
     commandName: "rank",
@@ -25,9 +32,21 @@ const RankCommand: ICommand = {
     }],
 
     exec: async (client, message, userMention) => {
-        let user = message.author;
-        if (userMention && message.mentions.members) {
-            user = message.mentions.members?.first();
+        if ("sendTyping" in message.channel) message.channel.sendTyping();
+
+        let user = message.member;
+
+        const mentionedUser = message.mentions.members?.first();
+        if (userMention && mentionedUser) {
+            user = mentionedUser;
+        }
+
+        if (!user) {
+            const embed = client.embeds.errorEmbed(
+                `Could not find ${message.author.tag}'s exp!`,
+            );
+
+            return message.reply({ embeds: [embed] });
         }
 
         const userData = await findUser(client, user.id);
@@ -48,18 +67,41 @@ const RankCommand: ICommand = {
         const level = getLevel(userData.exp);
         const expNextLevel = expForNextLevel(userData.exp);
         const cdFormatted = dayjs(cooldown - Date.now()).format("mm[m] ss[s]");
-        message.reply(
-            `Exp: ${userData.exp}/${expNextLevel}\nLevel: ${level}\nCooldown: ${cdFormatted}`,
+        const timestamp = dayjs().format("DD-MM-YYYY [at] hh:mma");
+
+        const card = new RankCardBuilder({
+            level,
+            exp: userData.exp,
+            rankUpExp: expNextLevel,
+            rank: 1,
+            name: user.displayName,
+            pfpURL: user.displayAvatarURL(),
+            memberSince: user.joinedAt ?? new Date(),
+        });
+
+        const image = await card.build({ format: "png", debug: false });
+
+        const attachment = new AttachmentBuilder(image, {
+            name: `${user.displayName}-rank.png`,
+        });
+        const file = new MediaGalleryBuilder({
+            items: [
+                {
+                    media: {
+                        url: `attachment://${user.displayName}-rank.png`,
+                    },
+                },
+            ],
+        });
+        const text = new TextDisplayBuilder().setContent(
+            `-# Cooldown for EXP gain: ${cdFormatted} // ${timestamp}`,
         );
 
-        await sendPaginationEmbed(
-            message,
-            [
-                client.embeds.replyEmbed("test1", "test1"),
-                client.embeds.replyEmbed("test2", "test2"),
-                client.embeds.replyEmbed("test3", "test3"),
-            ],
-        );
+        message.reply({
+            flags: MessageFlags.IsComponentsV2,
+            components: [file, text],
+            files: [attachment],
+        });
     },
 };
 

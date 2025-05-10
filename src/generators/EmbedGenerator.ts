@@ -1,9 +1,9 @@
 import { EmbedBuilder } from "@discordjs/builders";
-import { happyKaomoji, sadKaomoji, shockKaomoji } from "./kaomoji.ts";
+import { happyKaomoji, sadKaomoji, shockKaomoji } from "../util/kaomoji.ts";
 import config from "../config.ts";
 import Miki from "../struct/Miki.ts";
 
-class MikiEmbeds {
+class EmbedGenerator {
     private client: Miki;
     constructor(client: Miki) {
         this.client = client;
@@ -34,4 +34,4 @@ class MikiEmbeds {
     }
 }
 
-export default MikiEmbeds;
+export default EmbedGenerator;
