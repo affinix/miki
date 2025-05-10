@@ -26,21 +26,6 @@ class RankCardBuilder extends Builder<RankCardProps> {
         super(RANK_CARD_WIDTH, RANK_CARD_HEIGHT);
 
         this.bootstrap(opt);
-
-        Font.fromFileSync(
-            `${process.cwd()}/resources/font/phonk-regular.otf`,
-            "phonk",
-        );
-
-        Font.fromFileSync(
-            `${process.cwd()}/resources/font/swiss721-blk-bt.ttf`,
-            "swiss721",
-        );
-
-        Font.fromFileSync(
-            `${process.cwd()}/resources/font/lilita-one.ttf`,
-            "lilita-one",
-        );
     }
 
     override async render() {

@@ -3,6 +3,7 @@ import { GatewayIntentBits } from "discord-api-types/v10";
 import fg from "fast-glob";
 import process from "node:process";
 import { drizzle } from "drizzle-orm/libsql/node";
+import { Font } from "canvacord";
 
 import config from "../config.ts";
 import logger from "../util/logger.ts";
@@ -34,36 +35,56 @@ class Miki extends Client {
     }
 
     async start(): Promise<void> {
-        this.loadEvents();
-        this.loadCommands();
+        await this.loadEvents();
+        await this.loadCommands();
+        await this.loadFonts();
 
         const users = await this.db.select().from(usersTable);
         this.logger.log(`Loaded ${users.length} users in database.`);
+
         this.login(Deno.env.get("TOKEN"));
     }
 
-    loadEvents(): void {
+    async loadEvents(): Promise<void> {
         const files: string[] = fg.sync("src/events/*.ts");
         this.logger.log(`Loading ${files.length} events.`);
 
-        files.forEach(async (file) => {
+        for (const file of files) {
             const event: IEvent<EventKey> =
                 (await import(`file://${process.cwd()}/${file}`)).default;
 
             this.on(event.eventName, (...args) => event.exec(this, ...args));
-        });
+            this.logger.subLog(`   ↪ Loaded ${event.eventName}.`);
+        }
     }
 
-    loadCommands(): void {
+    async loadCommands(): Promise<void> {
         const files: string[] = fg.sync("src/commands/**/*.ts");
         this.logger.log(`Loading ${files.length} commands.`);
 
-        files.forEach(async (file) => {
+        for (const file of files) {
             const command: ICommand =
                 (await import(`file://${process.cwd()}/${file}`)).default;
 
             this.commands.set(command.commandName, command);
-        });
+            this.logger.subLog(`   ↪ Loaded ${command.commandName}.`);
+        }
+    }
+
+    async loadFonts(): Promise<void> {
+        const files: string[] = fg.sync("resources/font/*");
+        this.logger.log(`Loading ${files.length} fonts.`);
+
+        for (const file of files) {
+            const [fileName] = file.split("/").slice(-1);
+
+            await Font.fromFile(
+                `${process.cwd()}/${file}`,
+                `${fileName.split(".")[0]}`,
+            );
+
+            this.logger.subLog(`   ↪ Loaded ${fileName.split(".")[0]}.`);
+        }
     }
 }
 
