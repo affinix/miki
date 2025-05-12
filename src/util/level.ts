@@ -6,6 +6,12 @@
 
 import config from "../config.ts";
 
+interface LevelInfo {
+    exp: number;
+    level: number;
+    levelUpExp: number;
+}
+
 // Exp neeed to get to level.
 export const expForLevel = (level: number): number => {
     let exp = 0;
@@ -27,3 +33,8 @@ export const getLevel = (exp: number): number => {
 // Total exp needed to get to next level
 export const expForNextLevel = (exp: number): number =>
     expForLevel(getLevel(exp) + 1);
+
+// Get all info
+export const getLevelInfo = (exp: number): LevelInfo => {
+    return { exp, level: getLevel(exp), levelUpExp: expForNextLevel(exp) };
+};

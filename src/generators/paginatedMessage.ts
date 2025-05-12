@@ -1,3 +1,4 @@
+import type { DeepWritable } from "ts-essentials";
 import { ButtonInteraction, Message, MessageCreateOptions } from "discord.js";
 import { ButtonStyle } from "discord-api-types/v10";
 import {
@@ -9,8 +10,7 @@ import {
 
 const EMBED_TIMEOUT = 1000 * 20;
 
-type DeepWriteable<T> = { -readonly [P in keyof T]: DeepWriteable<T[P]> };
-export type MessagePage = DeepWriteable<MessageCreateOptions>;
+export type MessagePage = DeepWritable<MessageCreateOptions>;
 
 enum ButtonTypes {
     FIRST,
@@ -38,8 +38,12 @@ export const sendPaginatedMessage = async (
         };
     };
 
-    const curPage = await message.reply(render());
+    if (pages.length === 1) {
+        message.reply(render(true));
+        return;
+    }
 
+    const curPage = await message.reply(render());
     const collector = curPage.createMessageComponentCollector({
         filter: (i: ButtonInteraction) => {
             const id = parseInt(i.customId);
@@ -65,6 +69,7 @@ export const sendPaginatedMessage = async (
                 break;
         }
 
+        collector.resetTimer();
         await i.update(render());
     });
 
@@ -86,7 +91,7 @@ const generateButtons = (
         new ButtonBuilder()
             .setCustomId(`${ButtonTypes.PREV}`)
             .setLabel("‹")
-            .setDisabled(index === 0)
+            .setDisabled(true)
             .setStyle(ButtonStyle.Secondary),
         new ButtonBuilder()
             .setCustomId(`${ButtonTypes.NEXT}`)
@@ -111,6 +116,6 @@ const generateFooter = (
     time: number,
 ): TextDisplayBuilder => {
     return new TextDisplayBuilder().setContent(
-        `-# page ${index + 1} of ${pages} • <t:${Math.floor(time / 1000)}:R>`,
+        `-# page ${index + 1} of ${pages}⠀•⠀<t:${Math.floor(time / 1000)}:R>`,
     );
 };

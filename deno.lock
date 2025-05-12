@@ -13,7 +13,8 @@
     "npm:drizzle-kit@*": "0.31.1_esbuild@0.25.4",
     "npm:drizzle-kit@~0.31.1": "0.31.1_esbuild@0.25.4",
     "npm:drizzle-orm@~0.43.1": "0.43.1_@libsql+client@0.15.4",
-    "npm:fast-glob@^3.3.3": "3.3.3"
+    "npm:fast-glob@^3.3.3": "3.3.3",
+    "npm:ts-essentials@^10.0.4": "10.0.4"
   },
   "npm": {
     "@discordjs/builders@1.11.2": {
@@ -995,6 +996,9 @@
         "ieee754"
       ]
     },
+    "ts-essentials@10.0.4": {
+      "integrity": "sha512-lwYdz28+S4nicm+jFi6V58LaAIpxzhg9rLdgNC1VsdP/xiFBseGhF1M/shwCk6zMmwahBZdXcl34LVHrEang3A=="
+    },
     "ts-mixer@6.0.4": {
       "integrity": "sha512-ufKpbmrugz5Aou4wcr5Wc1UUFWOLhq+Fm6qa6P0w0K5Qw2yhaUoiWszhCVuNQyNwrlGiscHOmqYoAox1PtvgjA=="
     },
@@ -1054,7 +1058,8 @@
       "npm:discord.js@^14.19.3",
       "npm:drizzle-kit@~0.31.1",
       "npm:drizzle-orm@~0.43.1",
-      "npm:fast-glob@^3.3.3"
+      "npm:fast-glob@^3.3.3",
+      "npm:ts-essentials@^10.0.4"
     ]
   }
 }

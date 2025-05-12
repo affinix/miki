@@ -12,6 +12,7 @@ import { ICommand } from "./Command.ts";
 import MikiEmbeds from "../generators/EmbedGenerator.ts";
 import { usersTable } from "../db/user.ts";
 import * as schema from "../db/schema.ts";
+import { createUser } from "../db/querys.ts";
 
 class Miki extends Client {
     public config = config;

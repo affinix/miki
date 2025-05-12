@@ -53,17 +53,6 @@ const PingCommand: ICommand = {
         );
 
         message.reply({ embeds: [embed] });
-
-        sendPaginatedMessage(message, [{
-            flags: MessageFlags.IsComponentsV2,
-            components: [new TextDisplayBuilder().setContent("test1")],
-        }, {
-            flags: MessageFlags.IsComponentsV2,
-            components: [new TextDisplayBuilder().setContent("test2")],
-        }, {
-            flags: MessageFlags.IsComponentsV2,
-            components: [new TextDisplayBuilder().setContent("test3")],
-        }]);
     },
 };
 

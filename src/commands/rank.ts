@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { findUser } from "../db/querys.ts";
 import { ICommand } from "../struct/Command.ts";
 import CommandCategory from "../struct/CommandCategory.ts";
-import { expForNextLevel, getLevel } from "../util/level.ts";
+import { getLevelInfo } from "../util/level.ts";
 import RankCardBuilder from "../generators/RankCardBuilder.ts";
 import { MessageFlags } from "discord-api-types/v10";
 import { AttachmentBuilder } from "discord.js";
@@ -60,15 +60,14 @@ const RankCommand: ICommand = {
             );
         }
 
-        const level = getLevel(userData.exp);
-        const expNextLevel = expForNextLevel(userData.exp);
+        const { level, levelUpExp } = getLevelInfo(userData.exp);
         const cdFormatted = dayjs(cooldown - Date.now()).format("mm[m] ss[s]");
         const timestamp = dayjs().format("DD-MM-YYYY [at] hh:mma");
 
         const card = new RankCardBuilder({
             level,
             exp: userData.exp,
-            rankUpExp: expNextLevel,
+            rankUpExp: levelUpExp,
             rank: 1,
             name: user.displayName,
             pfpURL: user.displayAvatarURL(),
