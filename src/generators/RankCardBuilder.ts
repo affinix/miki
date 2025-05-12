@@ -1,7 +1,6 @@
 // I am so sorry future me, this might be the most unmaintainable code I've written.
 // If only jsx would actually work :(
 
-import { Font } from "canvacord";
 import { Element } from "canvacord";
 import { Builder, JSX, loadImage } from "canvacord";
 import process from "node:process";
@@ -253,13 +252,13 @@ class RankCardBuilder extends Builder<RankCardProps> {
                         width: "944.9px",
                         justifyContent: "flex-end",
                         alignItems: "flex-end",
-                        gap: "7px",
+                        gap: "2px",
                     },
                 },
                 JSX.createElement("p", {
                     style: {
                         fontFamily: "lilita-one",
-                        fontSize: "52px",
+                        fontSize: "54px",
                         margin: "0px",
                         lineHeight: "0.85",
                         color: "#626262",
@@ -275,7 +274,7 @@ class RankCardBuilder extends Builder<RankCardProps> {
                     },
                 }, `${this.options.get("name")}` as unknown as Element),
             ),
-            // nametag
+            // join date
             JSX.createElement(
                 "div",
                 {

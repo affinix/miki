@@ -1,7 +1,10 @@
+import { MessageFlags } from "discord-api-types/v10";
+import { sendPaginatedMessage } from "../generators/paginatedMessage.ts";
 import { ICommand } from "../struct/Command.ts";
 import CommandCategory from "../struct/CommandCategory.ts";
 import { commandUsage, listCommands } from "../util/commandInfo.ts";
 import { saluteKaomoji } from "../util/kaomoji.ts";
+import { TextDisplayBuilder } from "@discordjs/builders";
 
 const PingCommand: ICommand = {
     commandName: "help",
@@ -50,6 +53,17 @@ const PingCommand: ICommand = {
         );
 
         message.reply({ embeds: [embed] });
+
+        sendPaginatedMessage(message, [{
+            flags: MessageFlags.IsComponentsV2,
+            components: [new TextDisplayBuilder().setContent("test1")],
+        }, {
+            flags: MessageFlags.IsComponentsV2,
+            components: [new TextDisplayBuilder().setContent("test2")],
+        }, {
+            flags: MessageFlags.IsComponentsV2,
+            components: [new TextDisplayBuilder().setContent("test3")],
+        }]);
     },
 };
 

@@ -7,7 +7,8 @@
         "db:push": "deno run -A --node-modules-dir npm:drizzle-kit push"
     },
     "imports": {
-        "@discordjs/builders": "npm:@discordjs/builders@^1.11.2",
+        "@discordjs/builders-dev": "npm:@discordjs/builders@^2.0.0-dev",
+        "@discordjs/builders": "npm:@discordjs/builders@latest",
         "@libsql/client": "npm:@libsql/client@^0.15.4",
         "canvacord": "npm:canvacord@^6.0.2",
         "discord-api-types": "npm:discord-api-types@^0.38.3",

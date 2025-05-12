@@ -6,11 +6,7 @@ import { expForNextLevel, getLevel } from "../util/level.ts";
 import RankCardBuilder from "../generators/RankCardBuilder.ts";
 import { MessageFlags } from "discord-api-types/v10";
 import { AttachmentBuilder } from "discord.js";
-import {
-    FileBuilder,
-    MediaGalleryBuilder,
-    TextDisplayBuilder,
-} from "@discordjs/builders";
+import { MediaGalleryBuilder, TextDisplayBuilder } from "@discordjs/builders";
 
 const RankCommand: ICommand = {
     commandName: "rank",
@@ -82,13 +78,13 @@ const RankCommand: ICommand = {
         const image = await card.build({ format: "png", debug: false });
 
         const attachment = new AttachmentBuilder(image, {
-            name: `${user.displayName}-rank.png`,
+            name: `${user.id}-rank.png`,
         });
         const file = new MediaGalleryBuilder({
             items: [
                 {
                     media: {
-                        url: `attachment://${user.displayName}-rank.png`,
+                        url: `attachment://${user.id}-rank.png`,
                     },
                 },
             ],
