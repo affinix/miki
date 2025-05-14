@@ -7,6 +7,7 @@ interface ICommand {
     category: CommandCategory;
     desc: string;
     longDesc: string;
+    admin: boolean;
     args: ICommandArg[];
     exec: (client: Miki, message: Message, ...args: string[]) => void;
 }

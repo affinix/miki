@@ -23,6 +23,7 @@ const LeaderboardCommand: ICommand = {
     desc: "Check the server EXP leaderboard.",
     longDesc:
         "Displays a leaderboard for the server, ranking members by exp/level.",
+    admin: false,
     args: [],
 
     exec: async (client, message) => {

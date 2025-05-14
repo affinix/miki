@@ -17,7 +17,7 @@ export const commandUsage = (command: ICommand): string => {
     return `\`\`\`md\n${out}\n\`\`\``;
 };
 
-export const listCommands = (commands: ICommand[]): string => {
+export const listCommands = (commands: ICommand[], admin: boolean): string => {
     const prefix = config.prefix;
     let out = `> Use ${prefix}help [command] for more details\n`;
     let currentCategory = "";
@@ -26,13 +26,15 @@ export const listCommands = (commands: ICommand[]): string => {
         (len, str) => Math.max(len, str.commandName.length),
         0,
     );
-    const sortedCommands = commands.sort((p, c) => {
-        return (p.category > c.category
-            ? 1
-            : (p.commandName > c.commandName && p.category === c.category
+    const sortedCommands = commands
+        .sort((p, c) => {
+            return (p.category > c.category
                 ? 1
-                : -1));
-    });
+                : (p.commandName > c.commandName && p.category === c.category
+                    ? 1
+                    : -1));
+        })
+        .filter((c) => !c.admin || admin);
 
     sortedCommands.forEach((cmd) => {
         const category = cmd.category;

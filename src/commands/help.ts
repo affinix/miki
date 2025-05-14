@@ -9,6 +9,7 @@ const PingCommand: ICommand = {
     desc: "Displays all commands.",
     longDesc:
         "Lists all the commands I have. I'll show you all the things that I can do! ᕙ[⎚◡⎚]ᕗ",
+    admin: false,
     args: [{
         name: "command",
         description: "The command you want more info on!",
@@ -46,7 +47,10 @@ const PingCommand: ICommand = {
 
         const embed = client.embeds.replyEmbed(
             `miki's at your service! ${saluteKaomoji()}`,
-            listCommands([...client.commands.values()]),
+            listCommands(
+                [...client.commands.values()],
+                client.config.admins.includes(message.author.id),
+            ),
         );
 
         message.reply({ embeds: [embed] });

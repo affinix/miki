@@ -14,6 +14,7 @@ const RankCommand: ICommand = {
     desc: "Check your exp & level.",
     longDesc:
         "Displays your current exp and level, or the exp and level of the person you mention.",
+    admin: false,
     args: [{
         name: "user",
         description: "Mention of the user you want to check!",

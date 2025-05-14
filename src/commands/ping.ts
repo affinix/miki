@@ -6,6 +6,7 @@ const PingCommand: ICommand = {
     category: CommandCategory.MISC,
     desc: "Check message ping.",
     longDesc: "Pong! Checks how long it takes for me to send a message.",
+    admin: false,
     args: [],
 
     exec: async (client, message) => {

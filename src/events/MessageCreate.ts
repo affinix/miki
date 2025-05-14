@@ -20,6 +20,9 @@ const ReadyEvent: IEvent<Events.MessageCreate> = {
 
         const cmd = client.commands.get(command);
         if (!cmd) return;
+        if (cmd.admin && !client.config.admins.includes(message.author.id)) {
+            return;
+        }
 
         for (const [i, arg] of cmd.args.entries()) {
             let errorMessage: string | null = null;

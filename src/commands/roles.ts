@@ -13,6 +13,7 @@ const RoleCommand: ICommand = {
     category: CommandCategory.ADMIN,
     desc: "Edit roles.",
     longDesc: "Add, edit or delete roles.",
+    admin: true,
     args: [{
         name: "operation",
         description: "One of the following:\n" +
