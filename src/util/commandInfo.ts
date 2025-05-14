@@ -3,7 +3,7 @@ import config from "../config.ts";
 
 export const commandUsage = (command: ICommand): string => {
     const argsList = command.args.reduce<string>(
-        (acc, arg) => acc += `[${arg.name}]`,
+        (acc, arg) => acc += `[${arg.name}] `,
         "",
     );
 
@@ -11,7 +11,7 @@ export const commandUsage = (command: ICommand): string => {
 
     command.args.forEach((arg) => {
         out += `\n> [${arg.name}] ${arg.required ? "(required)" : ""}`;
-        out += `\n    ↪ ${arg.description}`;
+        out += `\n    ↪ ${arg.description}\n`;
     });
 
     return `\`\`\`md\n${out}\n\`\`\``;
