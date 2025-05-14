@@ -4,7 +4,8 @@
         "dev": "deno run --env-file -A --watch src/main.ts",
         "db:generate": "deno run -A --node-modules-dir npm:drizzle-kit generate",
         "db:migrate": "deno run -A --node-modules-dir npm:drizzle-kit migrate",
-        "db:push": "deno run -A --node-modules-dir npm:drizzle-kit push"
+        "db:push": "deno run -A --node-modules-dir npm:drizzle-kit push",
+        "db:view": "deno run -A --node-modules-dir npm:drizzle-kit studio"
     },
     "imports": {
         "@discordjs/builders-dev": "npm:@discordjs/builders@^2.0.0-dev",
