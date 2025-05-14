@@ -62,9 +62,10 @@ const RankCommand: ICommand = {
 
         const { level, levelUpExp } = getLevelInfo(userData.exp);
         const cdFormatted = dayjs(cooldown - Date.now()).format("mm[m] ss[s]");
-        const timestamp = dayjs().format("DD-MM-YYYY [at] hh:mma");
+        const timestamp = `<t:${Math.floor(Date.now() / 1000)}:R>`;
 
         const card = new RankCardBuilder({
+            client,
             level,
             exp: userData.exp,
             rankUpExp: levelUpExp,
@@ -89,7 +90,7 @@ const RankCommand: ICommand = {
             ],
         });
         const text = new TextDisplayBuilder().setContent(
-            `-# Cooldown for EXP gain: ${cdFormatted} // ${timestamp}`,
+            `-# Cooldown for EXP gain: ${cdFormatted}⠀•⠀${timestamp}`,
         );
 
         message.reply({

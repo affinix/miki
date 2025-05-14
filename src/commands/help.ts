@@ -1,10 +1,7 @@
-import { MessageFlags } from "discord-api-types/v10";
-import { sendPaginatedMessage } from "../generators/paginatedMessage.ts";
 import { ICommand } from "../struct/Command.ts";
 import CommandCategory from "../struct/CommandCategory.ts";
 import { commandUsage, listCommands } from "../util/commandInfo.ts";
 import { saluteKaomoji } from "../util/kaomoji.ts";
-import { TextDisplayBuilder } from "@discordjs/builders";
 
 const PingCommand: ICommand = {
     commandName: "help",

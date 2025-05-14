@@ -12,7 +12,7 @@ import { ICommand } from "./Command.ts";
 import MikiEmbeds from "../generators/EmbedGenerator.ts";
 import { usersTable } from "../db/user.ts";
 import * as schema from "../db/schema.ts";
-import { createUser } from "../db/querys.ts";
+import { loadImage } from "canvacord";
 
 class Miki extends Client {
     public config = config;
@@ -21,6 +21,7 @@ class Miki extends Client {
 
     public commands = new Map<string, ICommand>();
     public expCooldown = new Map<string, number>();
+    public images = new Map<string, string>();
 
     public db = drizzle({ connection: `${Deno.env.get("DB_FILE")}`, schema });
 
@@ -39,6 +40,7 @@ class Miki extends Client {
         await this.loadEvents();
         await this.loadCommands();
         await this.loadFonts();
+        await this.loadImages();
 
         const users = await this.db.select().from(usersTable);
         this.logger.log(`Loaded ${users.length} users in database.`);
@@ -83,6 +85,22 @@ class Miki extends Client {
                 `${process.cwd()}/${file}`,
                 `${fileName.split(".")[0]}`,
             );
+
+            this.logger.subLog(`   ↪ Loaded ${fileName.split(".")[0]}.`);
+        }
+    }
+
+    async loadImages() {
+        const files: string[] = fg.sync("resources/image/*");
+        this.logger.log(`Loading ${files.length} images.`);
+
+        for (const file of files) {
+            const [fileName] = file.split("/").slice(-1);
+            const img = (await loadImage(
+                `file://${process.cwd()}/${file}`,
+            )).toDataURL();
+
+            this.images.set(fileName.split(".")[0], img);
 
             this.logger.subLog(`   ↪ Loaded ${fileName.split(".")[0]}.`);
         }

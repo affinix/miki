@@ -3,14 +3,15 @@
 
 import { Element } from "canvacord";
 import { Builder, JSX, loadImage } from "canvacord";
-import process from "node:process";
 import dayjs, { PluginFunc } from "dayjs";
 import advancedFormat from "https://cdn.skypack.dev/dayjs/plugin/advancedFormat";
+import Miki from "../struct/Miki.ts";
 
 const RANK_CARD_WIDTH = 1000;
 const RANK_CARD_HEIGHT = 600;
 
 interface RankCardProps {
+    client: Miki;
     level: number;
     exp: number;
     rankUpExp: number;
@@ -28,9 +29,9 @@ class RankCardBuilder extends Builder<RankCardProps> {
     }
 
     override async render() {
-        const templateImage = (await loadImage(
-            `file://${process.cwd()}/resources/rank-card-template.png`,
-        )).toDataURL();
+        const templateImage = this.options.get("client").images.get(
+            "rank-card-template",
+        ) ?? "";
 
         const pfpImage = (await loadImage(this.options.get("pfpURL")))
             .toDataURL();
