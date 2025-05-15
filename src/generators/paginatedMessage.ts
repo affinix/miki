@@ -7,8 +7,7 @@ import {
     ButtonBuilder,
     TextDisplayBuilder,
 } from "@discordjs/builders";
-
-const EMBED_TIMEOUT = 1000 * 20;
+import config from "../config.ts";
 
 export type MessagePage = DeepWritable<MessageCreateOptions>;
 
@@ -49,7 +48,7 @@ export const sendPaginatedMessage = async (
             const id = parseInt(i.customId);
             return id >= 0 && id < ButtonTypes.__LENGTH;
         },
-        time: EMBED_TIMEOUT,
+        time: config.collectorTimeout,
     });
 
     collector.on("collect", async (i: ButtonInteraction) => {

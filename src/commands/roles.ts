@@ -1,3 +1,5 @@
+// TODO: move subcommands into own file
+
 import {
     addRole,
     deleteRole,

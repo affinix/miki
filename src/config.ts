@@ -10,6 +10,8 @@ const config = {
     expGain: 1,
     expGrowth: 40, // Growth of exp needed per level up.
 
+    collectorTimeout: 1000 * 20,
+
     // Bot admins
     admins: [
         "185975071603556352",
