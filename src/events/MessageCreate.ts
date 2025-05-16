@@ -1,4 +1,4 @@
-import { Events, GuildMember, Message } from "discord.js";
+import { Events, GuildMember, Message, Role } from "discord.js";
 import { IEvent } from "../struct/Event.ts";
 import { commandUsage } from "../util/commandInfo.ts";
 import Miki from "../struct/Miki.ts";
@@ -120,7 +120,7 @@ export const giveGuildUserRole = async (
     roleList: roleType[],
 ): Promise<void> => {
     const memberRoles = member.roles.cache;
-    memberRoles.forEach((role) => {
+    memberRoles.forEach((role: Role) => {
         if (!roleList.find((dbRole) => dbRole.id === role.id)) return;
         if (role.id != roleId) member.roles.remove(role.id);
     });
