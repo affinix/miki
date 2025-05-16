@@ -37,6 +37,16 @@ export const updateExp = async (
     );
 };
 
+export const setAutoRole = async (
+    client: Miki,
+    userId: string,
+    autoRole: boolean,
+): Promise<void> => {
+    await client.db.update(usersTable).set({ autoRole }).where(
+        eq(usersTable.id, userId),
+    );
+};
+
 // Page is indexed from 0
 export const getLeaderboard = async (
     client: Miki,

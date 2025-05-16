@@ -1,6 +1,6 @@
 import { roleType } from "../schema.ts";
 import Miki from "../../struct/Miki.ts";
-import { asc, desc, eq } from "drizzle-orm/sql/expressions";
+import { asc, eq } from "drizzle-orm/sql/expressions";
 import { rolesTable } from "../schemas/role.ts";
 
 export const getRole = async (

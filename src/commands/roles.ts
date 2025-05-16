@@ -56,6 +56,8 @@ const RoleCommand: ICommand = {
     }],
 
     exec: async (client, message, operation, roleId, level) => {
+        if (!message.guild) return;
+
         // List operation
         if (operation === "list") {
             const roles = await getGuildRoles(client, message.guild?.id);

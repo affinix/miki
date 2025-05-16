@@ -6,19 +6,23 @@ import {
     StringSelectMenuOptionBuilder,
     TextDisplayBuilder,
 } from "@discordjs/builders";
-import { MessageFlags, MessageType } from "discord-api-types/v10";
+import { MessageFlags } from "discord-api-types/v10";
 import { Message, StringSelectMenuInteraction } from "discord.js";
 
-import { findUser, getGuildRoles, getUserRole } from "../db/querys.ts";
+import {
+    findUser,
+    getGuildRoles,
+    getUserRole,
+    setAutoRole,
+} from "../db/querys.ts";
+import { roleType, userType } from "../db/schema.ts";
 import { getLevel } from "../util/level.ts";
 import { ICommand } from "../struct/Command.ts";
 import CommandCategory from "../struct/CommandCategory.ts";
 import { happyKaomoji } from "../util/kaomoji.ts";
 import { addUserRole, updateUserRole } from "../db/querys/userRoleQuery.ts";
-import { userRoleType } from "../db/schemas/userRole.ts";
 import Miki from "../struct/Miki.ts";
-import { roleType } from "../db/schemas/role.ts";
-import { userType } from "../db/schemas/user.ts";
+import { giveGuildUserRole } from "../events/MessageCreate.ts";
 
 enum RoleSelectTypes {
     ROLE = "ROLE",
@@ -148,6 +152,13 @@ const RoleCommand: ICommand = {
                     );
                 }
 
+                const guildMember = message.member;
+                if (!guildMember) return;
+                await giveGuildUserRole(
+                    guildMember,
+                    interactionValue,
+                    rolesList,
+                );
                 i.reply({
                     embeds: [
                         client.embeds.replyEmbed(
@@ -158,6 +169,21 @@ const RoleCommand: ICommand = {
                     flags: MessageFlags.Ephemeral,
                 });
             } else {
+                await setAutoRole(
+                    client,
+                    message.author.id,
+                    interactionValue === "ON",
+                );
+
+                i.reply({
+                    embeds: [
+                        client.embeds.replyEmbed(
+                            "Auto-role updated!",
+                            `Auto-role is now \`${interactionValue}\`!`,
+                        ),
+                    ],
+                    flags: MessageFlags.Ephemeral,
+                });
             }
         });
 
@@ -172,6 +198,81 @@ const RoleCommand: ICommand = {
             });
         });
     },
+};
+
+const render = async (
+    client: Miki,
+    message: Message,
+    user: userType,
+    roleId: string | undefined,
+    rolesList: roleType[],
+): Promise<ContainerBuilder> => {
+    const roleText = roleId ? `<@&${roleId}>` : "`no role`";
+
+    const roleSelect = new StringSelectMenuBuilder()
+        .setCustomId(RoleSelectTypes.ROLE)
+        .setMinValues(1)
+        .setMaxValues(1)
+        .setPlaceholder("Select your role.");
+
+    for (const [_i, r] of rolesList.entries()) {
+        const guildRole = await message.guild?.roles.fetch(r.id);
+        if (!guildRole) {
+            client.logger.error(
+                `Could not find role ${r.id} when generating roles list.`,
+            );
+            continue;
+        }
+
+        roleSelect.addOptions(
+            new StringSelectMenuOptionBuilder()
+                .setLabel(`Level ${r.level}⠀⌁⠀@${guildRole.name}`)
+                .setValue(r.id)
+                .setDefault(roleId != undefined && r.id === roleId),
+        );
+    }
+
+    const autoRoleSelect = new StringSelectMenuBuilder()
+        .setCustomId(RoleSelectTypes.AUTO_ROLE)
+        .setMinValues(1)
+        .setMaxValues(1)
+        .setPlaceholder("Turn auto-role on or off")
+        .addOptions(
+            new StringSelectMenuOptionBuilder()
+                .setLabel(`Auto-role: On`)
+                .setValue("ON")
+                .setDefault(user.autoRole),
+            new StringSelectMenuOptionBuilder()
+                .setLabel(`Auto-role: Off`)
+                .setValue("OFF")
+                .setDefault(!user.autoRole),
+        );
+
+    const roleSelectRow = new ActionRowBuilder()
+        .addComponents(roleSelect);
+    const autoRoleRow = new ActionRowBuilder()
+        .addComponents(autoRoleSelect);
+    const titleText = new TextDisplayBuilder()
+        .setContent(
+            `# ⠀⟢⠀Your current role is: ${roleText}\n` +
+                "Select a new role below:",
+        );
+    const autoRoleText = new TextDisplayBuilder()
+        .setContent(
+            "Configure if you want newly unlocked roles to be automatically assigned:",
+        );
+    const seperator = new SeparatorBuilder().setDivider(false);
+
+    const container = new ContainerBuilder()
+        .setAccentColor(client.config.primaryColor);
+
+    container.addTextDisplayComponents(titleText);
+    container.addActionRowComponents(roleSelectRow);
+    container.addSeparatorComponents(seperator);
+    container.addTextDisplayComponents(autoRoleText);
+    container.addActionRowComponents(autoRoleRow);
+
+    return container;
 };
 
 export default RoleCommand;
