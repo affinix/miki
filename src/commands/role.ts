@@ -7,7 +7,7 @@ import {
     TextDisplayBuilder,
 } from "@discordjs/builders";
 import { MessageFlags } from "discord-api-types/v10";
-import { Message, StringSelectMenuInteraction } from "discord.js";
+import { Guild, Message, StringSelectMenuInteraction } from "discord.js";
 
 import {
     findUser,
@@ -15,7 +15,7 @@ import {
     getUserRole,
     setAutoRole,
 } from "../db/querys.ts";
-import { roleType, userType } from "../db/schema.ts";
+import { roleType, userRoleType, userType } from "../db/schema.ts";
 import { getLevel } from "../util/level.ts";
 import { ICommand } from "../struct/Command.ts";
 import CommandCategory from "../struct/CommandCategory.ts";
@@ -42,11 +42,9 @@ const RoleCommand: ICommand = {
 
     exec: async (client, message) => {
         const user = await findUser(client, message.author.id);
-        if (!user) {
-            return client.logger.log(
-                `Could not find user ${message.author.id} in !role.`,
-            );
-        }
+        const guild = message.guild;
+        const guildMember = message.member;
+        if (!user || !guild || !guildMember) return;
 
         const role = await getUserRole(client, message.author.id);
         const rolesList = (await getGuildRoles(client, message.guildId))
@@ -56,23 +54,10 @@ const RoleCommand: ICommand = {
             .setCustomId(RoleSelectTypes.ROLE)
             .setMinValues(1)
             .setMaxValues(1)
-            .setPlaceholder("Select your role.");
-
-        for (const [_i, r] of rolesList.entries()) {
-            const guildRole = await message.guild?.roles.fetch(r.id);
-            if (!guildRole) {
-                return client.logger.error(
-                    `Could not find role ${r.id} when generating roles list.`,
-                );
-            }
-
-            roleSelect.addOptions(
-                new StringSelectMenuOptionBuilder()
-                    .setLabel(`Level ${r.level}⠀⌁⠀@${guildRole.name}`)
-                    .setValue(r.id)
-                    .setDefault(role != undefined && r.id === role.role),
+            .setPlaceholder("Select your role.")
+            .setOptions(
+                await generateRoleSelectOptions(rolesList, role, message.guild),
             );
-        }
 
         const autoRoleSelect = new StringSelectMenuBuilder()
             .setCustomId(RoleSelectTypes.AUTO_ROLE)
@@ -136,29 +121,22 @@ const RoleCommand: ICommand = {
 
         collector.on("collect", async (i: StringSelectMenuInteraction) => {
             collector.resetTimer();
+
             const interactionValue = i.values.at(0) ?? "";
             if (i.customId === RoleSelectTypes.ROLE) {
-                if (!role) {
-                    await addUserRole(
-                        client,
-                        message.author.id,
-                        interactionValue,
-                    );
-                } else {
-                    await updateUserRole(
-                        client,
-                        message.author.id,
-                        interactionValue,
-                    );
-                }
+                const roleOperation = role ? updateUserRole : addUserRole;
+                await roleOperation(
+                    client,
+                    message.author.id,
+                    interactionValue,
+                );
 
-                const guildMember = message.member;
-                if (!guildMember) return;
                 await giveGuildUserRole(
                     guildMember,
                     interactionValue,
                     rolesList,
                 );
+
                 i.reply({
                     embeds: [
                         client.embeds.replyEmbed(
@@ -200,79 +178,28 @@ const RoleCommand: ICommand = {
     },
 };
 
-const render = async (
-    client: Miki,
-    message: Message,
-    user: userType,
-    roleId: string | undefined,
+const generateRoleSelectOptions = async (
     rolesList: roleType[],
-): Promise<ContainerBuilder> => {
-    const roleText = roleId ? `<@&${roleId}>` : "`no role`";
+    currentRole: userRoleType | undefined,
+    guild: Guild,
+): Promise<StringSelectMenuOptionBuilder[]> => {
+    const options: StringSelectMenuOptionBuilder[] = [];
 
-    const roleSelect = new StringSelectMenuBuilder()
-        .setCustomId(RoleSelectTypes.ROLE)
-        .setMinValues(1)
-        .setMaxValues(1)
-        .setPlaceholder("Select your role.");
+    for (const r of rolesList) {
+        const guildRole = await guild.roles.fetch(r.id);
+        if (!guildRole) continue;
 
-    for (const [_i, r] of rolesList.entries()) {
-        const guildRole = await message.guild?.roles.fetch(r.id);
-        if (!guildRole) {
-            client.logger.error(
-                `Could not find role ${r.id} when generating roles list.`,
-            );
-            continue;
-        }
-
-        roleSelect.addOptions(
+        options.push(
             new StringSelectMenuOptionBuilder()
                 .setLabel(`Level ${r.level}⠀⌁⠀@${guildRole.name}`)
                 .setValue(r.id)
-                .setDefault(roleId != undefined && r.id === roleId),
+                .setDefault(
+                    currentRole != undefined && r.id === currentRole.role,
+                ),
         );
     }
 
-    const autoRoleSelect = new StringSelectMenuBuilder()
-        .setCustomId(RoleSelectTypes.AUTO_ROLE)
-        .setMinValues(1)
-        .setMaxValues(1)
-        .setPlaceholder("Turn auto-role on or off")
-        .addOptions(
-            new StringSelectMenuOptionBuilder()
-                .setLabel(`Auto-role: On`)
-                .setValue("ON")
-                .setDefault(user.autoRole),
-            new StringSelectMenuOptionBuilder()
-                .setLabel(`Auto-role: Off`)
-                .setValue("OFF")
-                .setDefault(!user.autoRole),
-        );
-
-    const roleSelectRow = new ActionRowBuilder()
-        .addComponents(roleSelect);
-    const autoRoleRow = new ActionRowBuilder()
-        .addComponents(autoRoleSelect);
-    const titleText = new TextDisplayBuilder()
-        .setContent(
-            `# ⠀⟢⠀Your current role is: ${roleText}\n` +
-                "Select a new role below:",
-        );
-    const autoRoleText = new TextDisplayBuilder()
-        .setContent(
-            "Configure if you want newly unlocked roles to be automatically assigned:",
-        );
-    const seperator = new SeparatorBuilder().setDivider(false);
-
-    const container = new ContainerBuilder()
-        .setAccentColor(client.config.primaryColor);
-
-    container.addTextDisplayComponents(titleText);
-    container.addActionRowComponents(roleSelectRow);
-    container.addSeparatorComponents(seperator);
-    container.addTextDisplayComponents(autoRoleText);
-    container.addActionRowComponents(autoRoleRow);
-
-    return container;
+    return options;
 };
 
 export default RoleCommand;
