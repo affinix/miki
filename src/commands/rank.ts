@@ -7,6 +7,8 @@ import RankCardBuilder from "../generators/RankCardBuilder.ts";
 import { MessageFlags } from "discord-api-types/v10";
 import { AttachmentBuilder } from "discord.js";
 import { MediaGalleryBuilder, TextDisplayBuilder } from "@discordjs/builders";
+import { countUsers } from "../db/querys/userQuery.ts";
+import { getLeaderboard } from "../db/querys/userQuery.ts";
 
 const RankCommand: ICommand = {
     commandName: "rank",
@@ -64,15 +66,23 @@ const RankCommand: ICommand = {
         const { level, levelUpExp } = getLevelInfo(userData.exp);
         const cdFormatted = dayjs(cooldown - Date.now()).format("mm[m] ss[s]");
         const timestamp = `<t:${Math.floor(Date.now() / 1000)}:R>`;
+        const displayName = user.displayName.length > 13
+            ? user.displayName.slice(0, 13) + "..."
+            : user.displayName;
+        const userCount = await countUsers(client);
+        const leaderboard = await getLeaderboard(client, 0, userCount);
 
         const card = new RankCardBuilder({
             client,
             level,
             exp: userData.exp,
             rankUpExp: levelUpExp,
-            rank: 1,
-            name: user.displayName,
-            pfpURL: user.displayAvatarURL(),
+            rank: leaderboard.findIndex((user) => user.id === userData.id) + 1,
+            name: displayName,
+            pfpURL: user.displayAvatarURL({
+                extension: "png",
+                forceStatic: true,
+            }),
             memberSince: user.joinedAt ?? new Date(),
         });
 

@@ -6,8 +6,8 @@ const config = {
     errorColor: 0xd8_23_23,
 
     // Cooldown for Exp in miliseconds
-    expCooldown: 1000 * 60 * 6,
-    expGain: 1,
+    expCooldown: 1000 * 6,
+    expGain: 10,
     expGrowth: 40, // Growth of exp needed per level up.
 
     collectorTimeout: 1000 * 20,

@@ -2,12 +2,14 @@ import { Events, GuildMember, Message, Role } from "discord.js";
 import { IEvent } from "../struct/Event.ts";
 import { commandUsage } from "../util/commandInfo.ts";
 import Miki from "../struct/Miki.ts";
-import { createUser, findUser, updateExp } from "../db/querys.ts";
 import type { roleType, userType } from "../db/schema.ts";
 import {
     addUserRole,
+    createUser,
+    findUser,
     getGuildRoles,
     getUserRole,
+    updateExp,
     updateUserRole,
 } from "../db/querys.ts";
 import { getLevel } from "../util/level.ts";
@@ -93,15 +95,15 @@ const giveRole = async (
 ): Promise<void> => {
     if (!message.guildId) return;
 
-    const roles = await getGuildRoles(client, message.guildId);
-    const role = await getUserRole(client, user.id);
+    const guildRoles = await getGuildRoles(client, message.guildId);
+    const userRole = await getUserRole(client, user.id);
     const level = getLevel(user.exp);
 
-    const highestRole = roles.findLast((r) => r.level <= level);
+    const highestRole = guildRoles.findLast((r) => r.level <= level);
     if (!highestRole) return;
 
-    if (role === undefined || role.id != highestRole.id) {
-        if (role === undefined) {
+    if (userRole === undefined || userRole.id != highestRole.id) {
+        if (userRole === undefined) {
             await addUserRole(client, user.id, highestRole.id);
         } else {
             await updateUserRole(client, user.id, highestRole.id);
@@ -110,7 +112,7 @@ const giveRole = async (
         const guildUser = message.member;
         if (!guildUser) return;
 
-        await giveGuildUserRole(guildUser, highestRole.id, roles);
+        await giveGuildUserRole(guildUser, highestRole.id, guildRoles);
     }
 };
 

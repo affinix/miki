@@ -7,7 +7,7 @@ import {
     TextDisplayBuilder,
 } from "@discordjs/builders";
 import { MessageFlags } from "discord-api-types/v10";
-import { Guild, Message, StringSelectMenuInteraction } from "discord.js";
+import { Guild, StringSelectMenuInteraction } from "discord.js";
 
 import {
     findUser,
@@ -15,13 +15,12 @@ import {
     getUserRole,
     setAutoRole,
 } from "../db/querys.ts";
-import { roleType, userRoleType, userType } from "../db/schema.ts";
+import { roleType, userRoleType } from "../db/schema.ts";
 import { getLevel } from "../util/level.ts";
 import { ICommand } from "../struct/Command.ts";
 import CommandCategory from "../struct/CommandCategory.ts";
 import { happyKaomoji } from "../util/kaomoji.ts";
 import { addUserRole, updateUserRole } from "../db/querys/userRoleQuery.ts";
-import Miki from "../struct/Miki.ts";
 import { giveGuildUserRole } from "../events/MessageCreate.ts";
 
 enum RoleSelectTypes {

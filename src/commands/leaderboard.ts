@@ -14,8 +14,10 @@ import {
 } from "../generators/paginatedMessage.ts";
 import config from "../config.ts";
 import { happyKaomoji } from "../util/kaomoji.ts";
+import { findUser } from "../db/querys/userQuery.ts";
+import { getRankText } from "../generators/RankCardBuilder.ts";
 
-const PAGE_LENGTH = 8;
+const PAGE_LENGTH = 6;
 
 const LeaderboardCommand: ICommand = {
     commandName: "leaderboard",
@@ -27,11 +29,20 @@ const LeaderboardCommand: ICommand = {
     args: [],
 
     exec: async (client, message) => {
+        if ("sendTyping" in message.channel) message.channel.sendTyping();
+
         const pageNo = Math.ceil((await countUsers(client)) / PAGE_LENGTH);
+
+        const userData = await findUser(client, message.author.id);
+        const userCount = await countUsers(client);
+        const leaderboard = await getLeaderboard(client, 0, userCount);
+
+        if (!userData) return;
+        const rank = leaderboard.findIndex((user) => user.id === userData.id);
         const leaderboardPages = await generateLeaderboardPages(
             client,
             pageNo,
-            1,
+            rank + 1,
         );
 
         sendPaginatedMessage(message, leaderboardPages);
@@ -53,20 +64,21 @@ const generateBlankLeaderboardPage = (): ContainerBuilder => {
 const generateLeaderboardPages = async (
     client: Miki,
     pageNo: number,
-    userRank: number,
+    rank: number,
 ): Promise<MessagePage[]> => {
     const pages: MessagePage[] = [];
-    for (let i = 0; i <= pageNo; i++) {
+    for (let i = 0; i < pageNo; i++) {
         const page: ContainerBuilder = generateBlankLeaderboardPage();
 
         const leaderboard = await getLeaderboard(client, i, PAGE_LENGTH);
         for (const [j, user] of leaderboard.entries()) {
             const guildUser = await client.users.fetch(user.id);
             const { exp, level, levelUpExp } = getLevelInfo(user.exp);
+            const rank = i * PAGE_LENGTH + j + 1;
 
             const userTitle = new TextDisplayBuilder()
                 .setContent(
-                    `## \\#${i * PAGE_LENGTH + j + 1}⠀⌁⠀<@${guildUser.id}>\n`,
+                    `## ${getRankText(rank)}⠀⌁⠀<@${guildUser.id}>\n`,
                 );
             const userInfo = new TextDisplayBuilder()
                 .setContent(
@@ -74,7 +86,7 @@ const generateLeaderboardPages = async (
                         `⠀⠀↪⠀**Level:**⠀\`${level}\`\n`,
                 );
             const pfpThumb = new ThumbnailBuilder().setURL(
-                guildUser.avatarURL() ?? "",
+                guildUser.displayAvatarURL(),
             );
             const infoContainer = new SectionBuilder()
                 .addTextDisplayComponents(userTitle, userInfo)
@@ -85,7 +97,7 @@ const generateLeaderboardPages = async (
 
         const footerText = new TextDisplayBuilder()
             .setContent(
-                `-# ⋆˙⟡⠀you are **rank ${userRank}**⠀//⠀${happyKaomoji()}`,
+                `-# ⋆˙⟡⠀you are **rank ${rank}**⠀//⠀${happyKaomoji()}`,
             );
         page.addTextDisplayComponents(footerText);
 

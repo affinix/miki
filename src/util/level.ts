@@ -25,7 +25,7 @@ export const expForLevel = (level: number): number => {
 // Get level achived by exp
 export const getLevel = (exp: number): number => {
     let level = 0;
-    while (expForLevel(level + 1) < exp) level++;
+    while (expForLevel(level + 1) <= exp) level++;
 
     return level;
 };

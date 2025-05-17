@@ -267,7 +267,8 @@ class RankCardBuilder extends Builder<RankCardProps> {
                 }, "@" as unknown as Element),
                 JSX.createElement("p", {
                     style: {
-                        fontFamily: "lilita-one",
+                        fontFamily:
+                            "lilita-one, noto-sans, noto-sans-jp-black, code2000",
                         fontSize: "74px",
                         margin: "0px",
                         lineHeight: "0.7",
@@ -309,10 +310,11 @@ class RankCardBuilder extends Builder<RankCardProps> {
     }
 }
 
-const getRankText = (rank: number): string => {
-    const suffix = ["th", "st", "nd", "rd"].fill("th", 4, 9);
+export const getRankText = (rank: number): string => {
+    const suffixList = ["th", "st", "nd", "rd"];
+    const suffix = rank <= 3 ? suffixList[rank] : "th";
 
-    return `${rank}${suffix[rank % 10]}`;
+    return `${rank}${suffix}`;
 };
 
 const getJoinDateText = (joinDate: Date): string => {

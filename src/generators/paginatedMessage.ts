@@ -90,7 +90,7 @@ const generateButtons = (
         new ButtonBuilder()
             .setCustomId(`${ButtonTypes.PREV}`)
             .setLabel("‹")
-            .setDisabled(true)
+            .setDisabled(index === 0)
             .setStyle(ButtonStyle.Secondary),
         new ButtonBuilder()
             .setCustomId(`${ButtonTypes.NEXT}`)
