@@ -21,28 +21,30 @@ enum ButtonTypes {
 
 export const sendPaginatedMessage = async (
     message: Message,
-    pages: MessagePage[],
+    pagesNo: number,
+    generatePage: (page: number) => Promise<MessagePage>,
 ): Promise<void> => {
     let index = 0;
     const timeSent = Date.now();
 
-    const render = (ended: boolean = false): MessagePage => {
+    const render = async (ended: boolean = false): Promise<MessagePage> => {
+        const generatedPage = await generatePage(index);
         return {
-            ...pages[index],
+            ...generatedPage,
             components: [
-                ...pages[index].components,
-                ended ? null : generateButtons(index, pages.length),
-                generateFooter(index, pages.length, timeSent),
+                ...generatedPage.components,
+                ended ? null : generateButtons(index, pagesNo),
+                generateFooter(index, pagesNo, timeSent),
             ].filter((c) => c != null),
         };
     };
 
-    if (pages.length === 1) {
-        message.reply(render(true));
+    if (pagesNo === 1) {
+        message.reply(await render(true));
         return;
     }
 
-    const curPage = await message.reply(render());
+    const curPage = await message.reply(await render());
     const collector = curPage.createMessageComponentCollector({
         filter: (i: ButtonInteraction) => {
             const id = parseInt(i.customId);
@@ -64,16 +66,16 @@ export const sendPaginatedMessage = async (
                 index += 1;
                 break;
             case ButtonTypes.LAST:
-                index = pages.length - 1;
+                index = pagesNo - 1;
                 break;
         }
 
         collector.resetTimer();
-        await i.update(render());
+        await i.update(await render());
     });
 
-    collector.on("end", () => {
-        curPage.edit(render(true));
+    collector.on("end", async () => {
+        curPage.edit(await render(true));
     });
 };
 

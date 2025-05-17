@@ -10,6 +10,14 @@ const ReadyEvent: IEvent<Events.ClientReady> = {
         );
 
         client.logger.log(`Bot is ready and logged in as ${botName}.`);
+
+        client.guilds.cache.forEach(async (guildId: string) => {
+            const guild = await client.guilds.fetch(guildId);
+            await guild.members.fetch();
+            client.logger.subLog(
+                `   ↪ Cached ${guild.members.cache.size} members in ${guild.name}.`,
+            );
+        });
     },
 };
 

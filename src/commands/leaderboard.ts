@@ -3,7 +3,7 @@ import { ThumbnailBuilder } from "@discordjs/builders";
 import { SectionBuilder, SeparatorBuilder } from "@discordjs/builders";
 import { ContainerBuilder, TextDisplayBuilder } from "@discordjs/builders";
 
-import { countUsers, getLeaderboard } from "../db/querys.ts";
+import { countUsers, findUser, getLeaderboard } from "../db/querys.ts";
 import { ICommand } from "../struct/Command.ts";
 import CommandCategory from "../struct/CommandCategory.ts";
 import Miki from "../struct/Miki.ts";
@@ -14,7 +14,6 @@ import {
 } from "../generators/paginatedMessage.ts";
 import config from "../config.ts";
 import { happyKaomoji } from "../util/kaomoji.ts";
-import { findUser } from "../db/querys/userQuery.ts";
 import { getRankText } from "../generators/RankCardBuilder.ts";
 
 const PAGE_LENGTH = 6;
@@ -29,9 +28,52 @@ const LeaderboardCommand: ICommand = {
     args: [],
 
     exec: async (client, message) => {
+        const generateLeaderboardPage = async (
+            page: number,
+        ): Promise<MessagePage> => {
+            const displayPage: ContainerBuilder =
+                generateBlankLeaderboardPage();
+
+            const leaderboard = await getLeaderboard(client, page, PAGE_LENGTH);
+            for (const [j, user] of leaderboard.entries()) {
+                const guildUser = await client.users.fetch(user.id);
+                const { exp, level, levelUpExp } = getLevelInfo(user.exp);
+                const rank = page * PAGE_LENGTH + j + 1;
+
+                const userTitle = new TextDisplayBuilder()
+                    .setContent(
+                        `## ${getRankText(rank)}⠀⌁⠀<@${guildUser.id}>\n`,
+                    );
+                const userInfo = new TextDisplayBuilder()
+                    .setContent(
+                        `⠀⠀↪⠀**EXP:**⠀\`${exp}/${levelUpExp}\`\n` +
+                            `⠀⠀↪⠀**Level:**⠀\`${level}\`\n`,
+                    );
+                const pfpThumb = new ThumbnailBuilder().setURL(
+                    guildUser.displayAvatarURL(),
+                );
+                const infoContainer = new SectionBuilder()
+                    .addTextDisplayComponents(userTitle, userInfo)
+                    .setThumbnailAccessory(pfpThumb);
+
+                displayPage.addSectionComponents(infoContainer);
+            }
+
+            const footerText = new TextDisplayBuilder()
+                .setContent(
+                    `-# ⋆˙⟡⠀you are **rank ${rank + 1}**⠀//⠀${happyKaomoji()}`,
+                );
+            displayPage.addTextDisplayComponents(footerText);
+
+            return {
+                flags: MessageFlags.IsComponentsV2,
+                components: [displayPage],
+            };
+        };
+
         if ("sendTyping" in message.channel) message.channel.sendTyping();
 
-        const pageNo = Math.ceil((await countUsers(client)) / PAGE_LENGTH);
+        const pagesNo = Math.ceil((await countUsers(client)) / PAGE_LENGTH);
 
         const userData = await findUser(client, message.author.id);
         const userCount = await countUsers(client);
@@ -39,13 +81,8 @@ const LeaderboardCommand: ICommand = {
 
         if (!userData) return;
         const rank = leaderboard.findIndex((user) => user.id === userData.id);
-        const leaderboardPages = await generateLeaderboardPages(
-            client,
-            pageNo,
-            rank + 1,
-        );
 
-        sendPaginatedMessage(message, leaderboardPages);
+        sendPaginatedMessage(message, pagesNo, generateLeaderboardPage);
     },
 };
 
@@ -59,55 +96,6 @@ const generateBlankLeaderboardPage = (): ContainerBuilder => {
         .addTextDisplayComponents(title)
         .addSeparatorComponents(separator)
         .setAccentColor(config.primaryColor);
-};
-
-const generateLeaderboardPages = async (
-    client: Miki,
-    pageNo: number,
-    rank: number,
-): Promise<MessagePage[]> => {
-    const pages: MessagePage[] = [];
-    for (let i = 0; i < pageNo; i++) {
-        const page: ContainerBuilder = generateBlankLeaderboardPage();
-
-        const leaderboard = await getLeaderboard(client, i, PAGE_LENGTH);
-        for (const [j, user] of leaderboard.entries()) {
-            const guildUser = await client.users.fetch(user.id);
-            const { exp, level, levelUpExp } = getLevelInfo(user.exp);
-            const rank = i * PAGE_LENGTH + j + 1;
-
-            const userTitle = new TextDisplayBuilder()
-                .setContent(
-                    `## ${getRankText(rank)}⠀⌁⠀<@${guildUser.id}>\n`,
-                );
-            const userInfo = new TextDisplayBuilder()
-                .setContent(
-                    `⠀⠀↪⠀**EXP:**⠀\`${exp}/${levelUpExp}\`\n` +
-                        `⠀⠀↪⠀**Level:**⠀\`${level}\`\n`,
-                );
-            const pfpThumb = new ThumbnailBuilder().setURL(
-                guildUser.displayAvatarURL(),
-            );
-            const infoContainer = new SectionBuilder()
-                .addTextDisplayComponents(userTitle, userInfo)
-                .setThumbnailAccessory(pfpThumb);
-
-            page.addSectionComponents(infoContainer);
-        }
-
-        const footerText = new TextDisplayBuilder()
-            .setContent(
-                `-# ⋆˙⟡⠀you are **rank ${rank}**⠀//⠀${happyKaomoji()}`,
-            );
-        page.addTextDisplayComponents(footerText);
-
-        pages.push({
-            flags: MessageFlags.IsComponentsV2,
-            components: [page],
-        });
-    }
-
-    return pages;
 };
 
 export default LeaderboardCommand;
