@@ -54,8 +54,9 @@ class Miki extends Client {
         this.logger.log(`Loading ${files.length} events.`);
 
         for (const file of files) {
-            const event: IEvent<EventKey> =
-                (await import(`file://${process.cwd()}/${file}`)).default;
+            const event: IEvent<EventKey> = (
+                await import(`file://${process.cwd()}/${file}`)
+            ).default;
 
             this.on(event.eventName, (...args) => event.exec(this, ...args));
             this.logger.subLog(`   ↪ Loaded ${event.eventName}.`);
@@ -67,8 +68,9 @@ class Miki extends Client {
         this.logger.log(`Loading ${files.length} commands.`);
 
         for (const file of files) {
-            const command: ICommand =
-                (await import(`file://${process.cwd()}/${file}`)).default;
+            const command: ICommand = (
+                await import(`file://${process.cwd()}/${file}`)
+            ).default;
 
             this.commands.set(command.commandName, command);
             this.logger.subLog(`   ↪ Loaded ${command.commandName}.`);
@@ -97,9 +99,9 @@ class Miki extends Client {
 
         for (const file of files) {
             const [fileName] = file.split("/").slice(-1);
-            const img = (await loadImage(
-                `file://${process.cwd()}/${file}`,
-            )).toDataURL();
+            const img = (
+                await loadImage(`file://${process.cwd()}/${file}`)
+            ).toDataURL();
 
             this.images.set(fileName.split(".")[0], img);
 
