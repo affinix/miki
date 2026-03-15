@@ -57,15 +57,8 @@ const RankCommand: ICommand = {
         }
 
         const cooldown = client.expCooldown.get(user.id);
-        if (!cooldown) {
-            return client.logger.error(
-                `Could not find cooldown for ${user.id} for !rank`,
-            );
-        }
 
         const { level, levelUpExp } = getLevelInfo(userData.exp);
-        const cdFormatted = dayjs(cooldown - Date.now()).format("mm[m] ss[s]");
-        const timestamp = `<t:${Math.floor(Date.now() / 1000)}:R>`;
         const displayName = user.displayName.length > 13
             ? user.displayName.slice(0, 13) + "..."
             : user.displayName;
@@ -100,9 +93,22 @@ const RankCommand: ICommand = {
                 },
             ],
         });
-        const text = new TextDisplayBuilder().setContent(
-            `-# Cooldown for EXP gain: ${cdFormatted}⠀•⠀${timestamp}`,
-        );
+
+        const text = new TextDisplayBuilder();
+        const timestamp = `<t:${Math.floor(Date.now() / 1000)}:R>`;
+        if (cooldown) {
+            const cdFormatted = dayjs(cooldown - Date.now()).format(
+                "mm[m] ss[s]",
+            );
+
+            text.setContent(
+                `-# Cooldown for EXP gain: ${cdFormatted}⠀•⠀${timestamp}`,
+            );
+        } else {
+            text.setContent(
+                `${timestamp}`,
+            );
+        }
 
         message.reply({
             flags: MessageFlags.IsComponentsV2,

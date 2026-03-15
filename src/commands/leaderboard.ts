@@ -1,7 +1,8 @@
 import { MessageFlags, SeparatorSpacingSize } from "discord-api-types/v10";
-import { ThumbnailBuilder } from "@discordjs/builders";
+import { MediaGalleryBuilder, ThumbnailBuilder } from "@discordjs/builders";
 import { SectionBuilder, SeparatorBuilder } from "@discordjs/builders";
 import { ContainerBuilder, TextDisplayBuilder } from "@discordjs/builders";
+import { MediaGalleryItemBuilder } from "discord.js";
 
 import { countUsers, findUser, getLeaderboard } from "../db/querys.ts";
 import { ICommand } from "../struct/Command.ts";
@@ -86,12 +87,17 @@ const LeaderboardCommand: ICommand = {
 };
 
 const generateBlankLeaderboardPage = (): ContainerBuilder => {
+    const bannerItem = new MediaGalleryItemBuilder().setURL(
+        "https://i.imgur.com/Xmmz0rC.png",
+    );
+    const banner = new MediaGalleryBuilder().addItems(bannerItem.toJSON());
     const title = new TextDisplayBuilder()
         .setContent("## ⠀⟢⠀anime@UTS leaderboard⠀⠀");
     const separator = new SeparatorBuilder()
         .setSpacing(SeparatorSpacingSize.Large);
 
     return new ContainerBuilder()
+        .addMediaGalleryComponents(banner)
         .addTextDisplayComponents(title)
         .addSeparatorComponents(separator)
         .setAccentColor(config.primaryColor);
