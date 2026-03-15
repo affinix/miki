@@ -8,6 +8,7 @@ import {
 } from "@discordjs/builders";
 import { MessageFlags } from "discord-api-types/v10";
 import { Guild, StringSelectMenuInteraction } from "discord.js";
+import { sadKaomoji } from "../util/kaomoji.ts";
 
 import {
     findUser,
@@ -76,10 +77,6 @@ const RoleCommand: ICommand = {
 
         const roleText = role ? `<@&${role.role}>` : "`no role`";
 
-        const roleSelectRow = new ActionRowBuilder()
-            .addComponents(roleSelect);
-        const autoRoleRow = new ActionRowBuilder()
-            .addComponents(autoRoleSelect);
         const titleText = new TextDisplayBuilder()
             .setContent(
                 `# ⠀⟢⠀Your current role is: ${roleText}\n` +
@@ -94,10 +91,23 @@ const RoleCommand: ICommand = {
         const container = new ContainerBuilder()
             .setAccentColor(client.config.primaryColor);
         container.addTextDisplayComponents(titleText);
-        container.addActionRowComponents(roleSelectRow);
-        container.addSeparatorComponents(seperator);
-        container.addTextDisplayComponents(autoRoleText);
-        container.addActionRowComponents(autoRoleRow);
+
+        if (rolesList.length > 0) {
+            const roleSelectRow = new ActionRowBuilder()
+                .addComponents(roleSelect);
+            const autoRoleRow = new ActionRowBuilder()
+                .addComponents(autoRoleSelect);
+            container.addActionRowComponents(roleSelectRow);
+            container.addSeparatorComponents(seperator);
+            container.addTextDisplayComponents(autoRoleText);
+            container.addActionRowComponents(autoRoleRow);
+        } else {
+            const noRoleText = new TextDisplayBuilder()
+                .setContent(
+                    `## You have no roles unlocked yet ${sadKaomoji()}`,
+                );
+            container.addTextDisplayComponents(noRoleText);
+        }
 
         const footer = new TextDisplayBuilder().setContent(
             `-# ${happyKaomoji()}⠀•⠀<t:${Math.floor(Date.now() / 1000)}:R>`,

@@ -6,7 +6,6 @@ import { ContainerBuilder, TextDisplayBuilder } from "@discordjs/builders";
 import { countUsers, findUser, getLeaderboard } from "../db/querys.ts";
 import { ICommand } from "../struct/Command.ts";
 import CommandCategory from "../struct/CommandCategory.ts";
-import Miki from "../struct/Miki.ts";
 import { getLevelInfo } from "../util/level.ts";
 import {
     MessagePage,

@@ -10,8 +10,6 @@ Requires [Deno](https://deno.com/) 2.1.4 or newer.
 git clone https://github.com/affinix/miki.git
 cd miki
 deno install
-deno task init
-deno task dev
 ```
 Copy `.env.example` to `.env` and fill in required values. Then:
 ```bash

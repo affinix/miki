@@ -11,7 +11,7 @@ import { ICommand } from "../struct/Command.ts";
 import CommandCategory from "../struct/CommandCategory.ts";
 
 const RoleCommand: ICommand = {
-    commandName: "roles",
+    commandName: "editrole",
     category: CommandCategory.ADMIN,
     desc: "Edit roles.",
     longDesc: "Add, edit or delete roles.",
