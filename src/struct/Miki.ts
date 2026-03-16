@@ -32,6 +32,7 @@ class Miki extends Client {
                 GatewayIntentBits.GuildMessages,
                 GatewayIntentBits.GuildMembers,
                 GatewayIntentBits.MessageContent,
+                GatewayIntentBits.GuildMessageReactions,
             ],
             allowedMentions: { repliedUser: false },
         });

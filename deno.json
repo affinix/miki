@@ -1,7 +1,7 @@
 {
     "tasks": {
         "init": "sed -i -e 's/\"deno\"/\"no-deno\"/' node_modules/@libsql/client/package.json && deno task db:push",
-        "start": "deno run -A jsr:@pup/pup run --autostart --cmd \"deno run --env-file -A src/main.ts\"",
+        "start": "pm2 start pm2.config.js",
         "dev": "deno run --env-file -A --watch src/main.ts",
         "db:generate": "deno run -A --node-modules-dir npm:drizzle-kit generate",
         "db:migrate": "deno run -A --node-modules-dir npm:drizzle-kit migrate",

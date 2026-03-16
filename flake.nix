@@ -10,7 +10,7 @@
     pkgs = import nixpkgs { inherit system; };
   in {
     devShells.${system}.default = pkgs.mkShell {
-      packages = with pkgs; [ deno ];
+      packages = with pkgs; [ deno pm2 ];
 
       shellHook = ''
         exec fish

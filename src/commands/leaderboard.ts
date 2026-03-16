@@ -1,7 +1,12 @@
 import { MessageFlags, SeparatorSpacingSize } from "discord-api-types/v10";
-import { MediaGalleryBuilder, ThumbnailBuilder } from "@discordjs/builders";
-import { SectionBuilder, SeparatorBuilder } from "@discordjs/builders";
-import { ContainerBuilder, TextDisplayBuilder } from "@discordjs/builders";
+import {
+    ContainerBuilder,
+    MediaGalleryBuilder,
+    SectionBuilder,
+    SeparatorBuilder,
+    TextDisplayBuilder,
+    ThumbnailBuilder,
+} from "@discordjs/builders";
 import { MediaGalleryItemBuilder } from "discord.js";
 
 import { countUsers, findUser, getLeaderboard } from "../db/querys.ts";
