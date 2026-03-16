@@ -20,6 +20,7 @@ import {
 import config from "../config.ts";
 import { happyKaomoji } from "../util/kaomoji.ts";
 import { getRankText } from "../generators/RankCardBuilder.ts";
+import Miki from "../struct/Miki.ts";
 
 const PAGE_LENGTH = 6;
 
@@ -34,6 +35,7 @@ const LeaderboardCommand: ICommand = {
 
     exec: async (client, message) => {
         const generateLeaderboardPage = async (
+            client: Miki,
             page: number,
         ): Promise<MessagePage> => {
             const displayPage: ContainerBuilder =
@@ -87,7 +89,7 @@ const LeaderboardCommand: ICommand = {
         if (!userData) return;
         const rank = leaderboard.findIndex((user) => user.id === userData.id);
 
-        sendPaginatedMessage(message, pagesNo, generateLeaderboardPage);
+        sendPaginatedMessage(client, message, pagesNo, generateLeaderboardPage);
     },
 };
 

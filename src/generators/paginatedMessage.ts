@@ -8,6 +8,7 @@ import {
     TextDisplayBuilder,
 } from "@discordjs/builders";
 import config from "../config.ts";
+import Miki from "../struct/Miki.ts";
 
 export type MessagePage = DeepWritable<MessageCreateOptions>;
 
@@ -20,15 +21,16 @@ enum ButtonTypes {
 }
 
 export const sendPaginatedMessage = async (
+    client: Miki,
     message: Message,
     pagesNo: number,
-    generatePage: (page: number) => Promise<MessagePage>,
+    generatePage: (client: Miki, page: number) => Promise<MessagePage>,
 ): Promise<void> => {
     let index = 0;
     const timeSent = Date.now();
 
     const render = async (ended: boolean = false): Promise<MessagePage> => {
-        const generatedPage = await generatePage(index);
+        const generatedPage = await generatePage(client, index);
         return {
             ...generatedPage,
             components: [

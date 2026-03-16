@@ -116,3 +116,106 @@ export const getReactionMostRecievedBy = async (
 
     return result;
 };
+
+export const getMostReactionsSent = async (
+    client: Miki,
+): Promise<{ userId: string; total: number }[]> => {
+    const result = await client.db
+        .select({
+            userId: reactionTable.from,
+            total: sql<number>`sum(${reactionTable.count})`,
+        })
+        .from(reactionTable)
+        .groupBy(reactionTable.from)
+        .orderBy(desc(sql`sum(${reactionTable.count})`));
+
+    return result;
+};
+
+export const getMostReactionsRecieved = async (
+    client: Miki,
+): Promise<{ userId: string; total: number }[]> => {
+    const result = await client.db
+        .select({
+            userId: reactionTable.to,
+            total: sql<number>`sum(${reactionTable.count})`,
+        })
+        .from(reactionTable)
+        .groupBy(reactionTable.to)
+        .orderBy(desc(sql`sum(${reactionTable.count})`))
+        .limit(10);
+
+    return result;
+};
+
+export const getUserMostSentTo = async (
+    client: Miki,
+    userId: string,
+): Promise<{ userId: string; total: number }> => {
+    const [result] = await client.db
+        .select({
+            userId: reactionTable.to,
+            total: sql<number>`sum(${reactionTable.count})`,
+        })
+        .from(reactionTable)
+        .where(eq(reactionTable.from, userId))
+        .groupBy(reactionTable.to)
+        .orderBy(desc(sql`sum(${reactionTable.count})`))
+        .limit(1);
+
+    return result;
+};
+
+export const getUserMostReceivedFrom = async (
+    client: Miki,
+    userId: string,
+): Promise<{ userId: string; total: number }> => {
+    const [result] = await client.db
+        .select({
+            userId: reactionTable.from,
+            total: sql<number>`sum(${reactionTable.count})`,
+        })
+        .from(reactionTable)
+        .where(eq(reactionTable.to, userId))
+        .groupBy(reactionTable.from)
+        .orderBy(desc(sql`sum(${reactionTable.count})`))
+        .limit(1);
+
+    return result;
+};
+
+export const getUserMostSent = async (
+    client: Miki,
+    userId: string,
+): Promise<{ emoji: string; total: number }[]> => {
+    const result = await client.db
+        .select({
+            emoji: reactionTable.emoji,
+            total: sql<number>`sum(${reactionTable.count})`,
+        })
+        .from(reactionTable)
+        .where(eq(reactionTable.from, userId))
+        .groupBy(reactionTable.emoji)
+        .orderBy(desc(sql`sum(${reactionTable.count})`))
+        .limit(10);
+
+    return result;
+};
+
+export const getUserMostRecieved = async (
+    client: Miki,
+    userId: string,
+): Promise<{ emoji: string; total: number }[]> => {
+    const result = await client.db
+        .select({
+            emoji: reactionTable.emoji,
+            total: sql<number>`sum(${reactionTable.count})`,
+        })
+        .from(reactionTable)
+        .where(eq(reactionTable.to, userId))
+        .groupBy(reactionTable.emoji)
+        .orderBy(desc(sql`sum(${reactionTable.count})`))
+        .limit(10);
+
+    return result;
+};
