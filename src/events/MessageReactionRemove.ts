@@ -6,6 +6,24 @@ import { Events } from "discord.js";
 const MessageReactionRemoveEvent: IEvent<Events.MessageReactionRemove> = {
     eventName: Events.MessageReactionRemove,
     exec: async (client, reaction, user) => {
+        if (reaction.partial) {
+            try {
+                await reaction.fetch();
+            } catch (e) {
+                return client.logger.error(
+                    `Error fetching partial reaction: ${e}`,
+                );
+            }
+        }
+
+        if (user.partial) {
+            try {
+                await user.fetch();
+            } catch (e) {
+                return client.logger.error(`Error fetching partial user: ${e}`);
+            }
+        }
+
         if (!reaction.message.author) return;
         // if (reaction.message.author.id == user.id) return;
 

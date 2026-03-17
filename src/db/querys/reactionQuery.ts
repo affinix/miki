@@ -3,18 +3,6 @@ import Miki from "../../struct/Miki.ts";
 import { reactionTable, reactionType } from "../schemas/reaction.ts";
 import { and, desc, eq } from "drizzle-orm/sql/expressions";
 
-// export const createReaction = async (
-//     client: Miki,
-//     from: string,
-//     to: string,
-//     emoji: string,
-// ): Promise<reactionType> => {
-//     const [inserted] = await client.db.insert(reactionTable)
-//         .values({ from, to, emoji }).returning();
-
-//     return inserted;
-// };
-
 export const incrementReaction = async (
     client: Miki,
     from: string,
@@ -216,6 +204,122 @@ export const getUserMostRecieved = async (
         .groupBy(reactionTable.emoji)
         .orderBy(desc(sql`sum(${reactionTable.count})`))
         .limit(10);
+
+    return result;
+};
+
+export const getUserEmojiUsageRank = async (
+    client: Miki,
+    userId: string,
+    emoji: string,
+): Promise<{ userId: string; total: number; rank: number } | null> => {
+    const totalExpr = sql<number>`sum(${reactionTable.count})`.as("total");
+    const rankExpr = sql<
+        number
+    >`rank() over (order by sum(${reactionTable.count}) desc)`.as("rank");
+
+    const ranked = client.db
+        .select({
+            userId: reactionTable.from,
+            total: totalExpr,
+            rank: rankExpr,
+        })
+        .from(reactionTable)
+        .where(eq(reactionTable.emoji, emoji))
+        .groupBy(reactionTable.from)
+        .as("ranked");
+
+    const result = await client.db
+        .select({
+            userId: ranked.userId,
+            total: ranked.total,
+            rank: ranked.rank,
+        })
+        .from(ranked)
+        .where(eq(ranked.userId, userId))
+        .limit(1);
+
+    return result[0] ?? null;
+};
+
+export const getUserEmojiReceivedRank = async (
+    client: Miki,
+    userId: string,
+    emoji: string,
+): Promise<{ userId: string; total: number; rank: number } | null> => {
+    const totalExpr = sql<number>`sum(${reactionTable.count})`.as("total");
+    const rankExpr = sql<number>`
+        rank() over (order by sum(${reactionTable.count}) desc)
+    `.as("rank");
+
+    const ranked = client.db
+        .select({
+            userId: reactionTable.to,
+            total: totalExpr,
+            rank: rankExpr,
+        })
+        .from(reactionTable)
+        .where(eq(reactionTable.emoji, emoji))
+        .groupBy(reactionTable.to)
+        .as("ranked");
+
+    const result = await client.db
+        .select({
+            userId: ranked.userId,
+            total: ranked.total,
+            rank: ranked.rank,
+        })
+        .from(ranked)
+        .where(eq(ranked.userId, userId))
+        .limit(1);
+
+    return result[0] ?? null;
+};
+
+export const getUserReactionMostSentTo = async (
+    client: Miki,
+    userId: string,
+    emoji: string,
+): Promise<{ userId: string; total: number }[]> => {
+    const result = await client.db
+        .select({
+            userId: reactionTable.to,
+            total: sql<number>`sum(${reactionTable.count})`.as("total"),
+        })
+        .from(reactionTable)
+        .where(
+            and(
+                eq(reactionTable.from, userId),
+                eq(reactionTable.emoji, emoji),
+            ),
+        )
+        .groupBy(reactionTable.to)
+        .orderBy(desc(sql`sum(${reactionTable.count})`));
+
+    return result;
+};
+
+export const getUserReactionMostReceivedFrom = async (
+    client: Miki,
+    userId: string,
+    emoji: string,
+): Promise<{ userId: string; total: number }[]> => {
+    const totalExpr = sql<number>`sum(${reactionTable.count})`;
+
+    const result = await client.db
+        .select({
+            userId: reactionTable.from,
+            total: totalExpr.as("total"),
+        })
+        .from(reactionTable)
+        .where(
+            and(
+                eq(reactionTable.to, userId),
+                eq(reactionTable.emoji, emoji),
+            ),
+        )
+        .groupBy(reactionTable.from)
+        .orderBy(desc(totalExpr));
 
     return result;
 };

@@ -17,6 +17,15 @@ import { getLevel } from "../util/level.ts";
 const ReadyEvent: IEvent<Events.MessageCreate> = {
     eventName: Events.MessageCreate,
     exec: async (client, message) => {
+        if (message.partial) {
+            try {
+                await message.fetch();
+            } catch (e) {
+                client.logger.error(`Error fetching partial message: ${e}`);
+                return;
+            }
+        }
+
         if (message.author.bot || !message.guild) return;
 
         let user = await findUser(client, message.author.id);

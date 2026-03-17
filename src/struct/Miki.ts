@@ -1,4 +1,4 @@
-import { Client } from "discord.js";
+import { Client, Partials } from "discord.js";
 import { GatewayIntentBits } from "discord-api-types/v10";
 import fg from "fast-glob";
 import process from "node:process";
@@ -34,6 +34,7 @@ class Miki extends Client {
                 GatewayIntentBits.MessageContent,
                 GatewayIntentBits.GuildMessageReactions,
             ],
+            partials: [Partials.Message, Partials.Reaction],
             allowedMentions: { repliedUser: false },
         });
     }

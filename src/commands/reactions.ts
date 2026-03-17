@@ -165,6 +165,12 @@ const generateSentPage = async (
 ): Promise<MessagePage> => {
     const displayPage: ContainerBuilder = generateBlankPage();
 
+    const title = new TextDisplayBuilder()
+        .setContent(
+            `# Most reactions sent:\n`,
+        );
+    displayPage.addTextDisplayComponents(title);
+
     const leaderboard = await getMostReactionsSent(client);
     for (
         let i = page * PAGE_LENGTH;
@@ -223,6 +229,12 @@ const generateRecievedPage = async (
     page: number,
 ): Promise<MessagePage> => {
     const displayPage: ContainerBuilder = generateBlankPage();
+
+    const title = new TextDisplayBuilder()
+        .setContent(
+            `# Most reactions received:\n`,
+        );
+    displayPage.addTextDisplayComponents(title);
 
     const leaderboard = await getMostReactionsRecieved(client);
     for (
